@@ -286,6 +286,21 @@ td .tk{display:flex;align-items:center;gap:10px;font-weight:700}
 .card h2{font-size:clamp(24px,4vw,32px);padding-right:48px}
 .card dl{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0;font-size:15px}
 .card dt{color:var(--muted)} .card dd{margin:0;font-weight:700;text-align:right}
+.card.reader{max-width:640px;padding:0;gap:0}
+.reader .r-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--sunk);border-radius:var(--r-lg) var(--r-lg) 0 0}
+.reader .r-body{padding:clamp(22px,4vw,34px);display:flex;flex-direction:column;gap:14px}
+.reader .r-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px;font-weight:700;color:var(--muted)}
+.reader .r-meta .label{background:var(--lime);color:var(--on-lime);padding:3px 10px;border-radius:999px}
+.reader h2{padding-right:0;overflow-wrap:anywhere}
+.reader.no-img h2,.reader.no-img .r-meta{padding-right:48px}
+.reader .r-sum{font-size:17px;line-height:1.6;margin:0}
+.reader .r-box{background:var(--sunk);border-radius:var(--r-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.reader .r-stocks{display:flex;gap:8px;flex-wrap:wrap}
+.reader .r-stocks button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;gap:8px;align-items:center}
+.reader .r-note{font-size:13px;color:var(--muted);margin:0}
+.reader .x{background:rgba(7,21,40,.7);color:#fff}
+.reader.no-img .x{background:var(--sunk);color:var(--ink)}
+.story h3 a,.feed .hd a{cursor:pointer}
 .x{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;border:0;background:var(--sunk);color:var(--ink);font-size:22px;cursor:pointer;display:grid;place-items:center}
 .sidetoggle{display:grid;grid-template-columns:1fr 1fr;background:var(--sunk);border-radius:999px;padding:4px;gap:4px}
 .sidetoggle button{min-height:42px;border-radius:999px;border:0;background:transparent;font-weight:700;cursor:pointer;color:var(--muted)}
@@ -638,7 +653,7 @@ footer strong{color:var(--ink)}
 <footer>
   <div class="wrap">
     <span><strong>InvesTeen</strong> · © 2026 · Not financial advice, just good info.</span>
-    <span>Market prices and news provided by Finnhub. Headlines link to their original publishers.</span>
+    <span>Market prices and news provided by Finnhub. Full stories are from their original publishers.</span>
   </div>
 </footer>
 
@@ -666,6 +681,26 @@ footer strong{color:var(--ink)}
   </div>
 </div>
 
+<div class="overlay" id="m-read" hidden>
+  <div class="card reader" role="dialog" aria-modal="true" aria-labelledby="r-title">
+    <button class="x" type="button" data-close aria-label="Close">×</button>
+    <img class="r-img" id="r-img" alt="" referrerpolicy="no-referrer" hidden>
+    <div class="r-body">
+      <div class="r-meta"><span class="label" id="r-src"></span><span id="r-time"></span></div>
+      <h2 id="r-title"></h2>
+      <p class="r-sum" id="r-sum"></p>
+      <div class="r-box" id="r-stockbox" hidden>
+        <span class="label">Stocks in this story</span>
+        <div class="r-stocks" id="r-stocks"></div>
+        <p class="r-note">Tap one to see its price and trade it in the simulator.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-lime btn-big" type="button" data-close style="flex:1">Back to news</button>
+        <a class="btn btn-big" id="r-link" target="_blank" rel="noopener" style="flex:1;text-align:center">Full story</a>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="m-recap" hidden>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="rc-title">
     <span class="label" id="rc-eyebrow"></span>
@@ -851,11 +886,29 @@ function renderTape(){
 function newsItem(n,lead){
   var a=el('article','story'+(lead?' lead':''));
   a.appendChild(el('span','label',n.source||'News'));
-  var h=el('h3');var link=el('a',null,n.headline);link.href=n.url;link.target='_blank';link.rel='noopener';link.style.textDecoration='none';h.appendChild(link);a.appendChild(h);
+  var h=el('h3');var link=el('a',null,n.headline);readLink(link,n);link.style.textDecoration='none';h.appendChild(link);a.appendChild(h);
   if(n.summary)a.appendChild(el('p',null,n.summary.length>220?n.summary.slice(0,217).replace(/\s+\S*$/,'')+'…':n.summary));
   var sl=el('div','src-line');sl.appendChild(el('span',null,n.datetime?ago(n.datetime*1000):''));
-  var rl=el('a',null,'Read on '+(n.source||'source'));rl.href=n.url;rl.target='_blank';rl.rel='noopener';sl.appendChild(rl);a.appendChild(sl);
+  var rl=el('a',null,'Read more');readLink(rl,n);sl.appendChild(rl);a.appendChild(sl);
   return a;
+}
+function readLink(a,n){a.href=n.url;a.addEventListener('click',function(e){if(e.metaKey||e.ctrlKey||e.shiftKey)return;e.preventDefault();openReader(n);});}
+function openReader(n){
+  var card=$('m-read').querySelector('.reader'),img=$('r-img');
+  img.hidden=true;card.classList.add('no-img');img.removeAttribute('src');
+  if(n.image){img.onload=function(){img.hidden=false;card.classList.remove('no-img');};img.onerror=function(){img.hidden=true;card.classList.add('no-img');};img.src=n.image;}
+  $('r-src').textContent=n.source||'News';
+  $('r-time').textContent=n.datetime?new Date(n.datetime*1000).toLocaleString([], {weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})+' · '+ago(n.datetime*1000):'';
+  $('r-title').textContent=n.headline;
+  $('r-sum').textContent=n.summary||'This story has no summary. Use the Full story button to read it on '+(n.source||'the publisher')+'.';
+  var box=$('r-stocks');box.innerHTML='';
+  var syms=(n.related||'').split(',').map(function(s){return s.trim().toUpperCase();}).filter(function(s){return A[s];}).slice(0,6);
+  syms.forEach(function(s){var b=el('button');b.type='button';b.appendChild(el('span',null,s));
+    var c=liveDayChg(s);if(isFinite(c)){var sp=el('span',null,usd.format(livePx(s))+' '+pct(c,1));sp.style.color=c>=0?'var(--gain)':'var(--loss)';b.appendChild(sp);}
+    b.addEventListener('click',function(){closeModal('m-read');go('simulator',true);if(S)openDetail(s);});box.appendChild(b);});
+  $('r-stockbox').hidden=!syms.length;
+  var rl=$('r-link');rl.href=n.url;rl.textContent='Full story on '+(n.source||'source')+' ↗';
+  openModal('m-read');card.scrollTop=0;
 }
 function renderHomeNews(){
   var box=$('home-news'),fb=$('news-fallback');
@@ -1050,7 +1103,7 @@ function renderDetail(sym){
 }
 function feedItem(n,compact){
   var li=el('li'),meta=el('div','meta');meta.appendChild(el('span',null,n.source||'News'));if(n.datetime)meta.appendChild(el('span',null,ago(n.datetime*1000)));li.appendChild(meta);
-  var hd=el('div','hd'),a=el('a',null,n.headline);a.href=n.url;a.target='_blank';a.rel='noopener';hd.appendChild(a);li.appendChild(hd);
+  var hd=el('div','hd'),a=el('a',null,n.headline);readLink(a,n);hd.appendChild(a);li.appendChild(hd);
   if(!compact&&n.summary)li.appendChild(el('p','sum',n.summary.length>260?n.summary.slice(0,257).replace(/\s+\S*$/,'')+'…':n.summary));
   if(!compact&&n.related){var tags=el('div','tags');n.related.split(',').map(function(s){return s.trim().toUpperCase();}).filter(function(s){return A[s];}).slice(0,4).forEach(function(s){var b=el('button',null,s);b.type='button';b.addEventListener('click',function(){openDetail(s);});tags.appendChild(b);});if(tags.children.length)li.appendChild(tags);}
   return li;
