@@ -216,6 +216,21 @@ section[role="tabpanel"]{padding-bottom:40px}
 .gview{padding-block:20px}
 .grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:960px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.lb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.lb-list li{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--sunk);font-variant-numeric:tabular-nums}
+.lb-list li.me{outline:2px solid var(--lime)}
+.lb-list .rk{font-weight:800;font-size:15px;text-align:center}
+.lb-list li:nth-child(1) .rk{background:var(--lime);color:var(--on-lime);border-radius:999px;padding:2px 0}
+.lb-list .nm{font-weight:700;overflow-wrap:anywhere}
+.lb-list .rt{font-weight:800}
+.lb-form{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.lb-form input[type=text],.lb-form input[type=email]{width:100%;min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:0 14px;font:inherit;font-size:16px}
+.lb-form .chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
+.lb-form .chk input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:#2F6FE4}
+.lb-form .radios{display:flex;gap:8px;flex-wrap:wrap}
+.lb-form .radios label{display:flex;gap:6px;align-items:center;background:var(--sunk);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.lb-form .err{color:var(--loss);font-weight:700;font-size:14px;margin:0}
+.lb-note{font-size:13px;color:var(--muted);margin:0}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;min-width:0}
 .panel h2{font-size:22px}
 .panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
@@ -525,7 +540,7 @@ footer strong{color:var(--ink)}
         <legend class="label" style="margin-top:32px">Choose a mode</legend>
         <div class="levels" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
           <label class="level"><input type="radio" name="mode" value="live" checked><h2>Live market<span class="check"></span></h2><p>Real prices that change every minute the market is open. Check back anytime to see how you're doing.</p></label>
-          <label class="level"><input type="radio" name="mode" value="future"><h2>Simulate the future<span class="check"></span></h2><p>Start at today's real prices, then fast-forward three years, one quarter at a time, with made-up news.</p></label>
+          <label class="level"><input type="radio" name="mode" value="future"><h2>Simulate the future<span class="check"></span></h2><p>Start at today's real prices, then fast-forward three years, one quarter at a time, with made-up news. <b>Finish all 3 years to enter the monthly leaderboard and win a prize.</b></p></label>
         </div>
       </fieldset>
       <fieldset style="border:0;padding:0;margin:0">
@@ -541,6 +556,11 @@ footer strong{color:var(--ink)}
       <div><h3>1. Build your portfolio</h3><p>Pick from index funds, sector funds, bonds and big-name stocks like Apple, Nvidia and Tesla.</p></div>
       <div><h3>2. Watch it move, live</h3><p>Prices follow the real US market. They change while the market is open (about 4:30–11 pm in Greece).</p></div>
       <div><h3>3. Follow the news</h3><p>Read real headlines and see how they move the investments you own.</p></div>
+    </div>
+    <div class="panel" style="margin-top:32px">
+      <div class="panel-head"><h2>🏆 Monthly leaderboard</h2><span class="label" id="sb-sub">Simulate the future</span></div>
+      <p class="lb-note" style="margin:6px 0 12px">Finish a 3-year "Simulate the future" game, enter with a username, and climb the ranks. The top player each month wins a prize. <a href="/rules.html">Contest rules</a></p>
+      <div id="setup-board"></div>
     </div>
   </div>
 
@@ -566,6 +586,7 @@ footer strong{color:var(--ink)}
           <button class="view-btn" type="button" data-view="trade">Trade</button>
           <button class="view-btn" type="button" data-view="news">News</button>
           <button class="view-btn" type="button" data-view="goals">Goals</button>
+          <button class="view-btn" type="button" data-view="board">Leaderboard</button>
         </div>
         <div class="game-actions">
           <button class="btn" type="button" id="restart">Restart</button>
@@ -614,6 +635,14 @@ footer strong{color:var(--ink)}
       <div class="gview" id="v-news" hidden>
         <div class="panel-head"><h2 style="font-size:28px">Market news</h2><span class="label" id="gn-sub">Real headlines</span></div>
         <ul class="feed" id="game-news"></ul>
+      </div>
+
+      <div class="gview" id="v-board" hidden>
+        <div class="panel">
+          <div class="panel-head"><h2>🏆 Monthly leaderboard</h2><span class="label" id="gb-sub"></span></div>
+          <p class="lb-note" style="margin:6px 0 12px">Ranked by return after 3 simulated years. Finish a "Simulate the future" game to enter. The top player each month wins a prize. <a href="/rules.html">Contest rules</a></p>
+          <div id="game-board"></div>
+        </div>
       </div>
 
       <div class="gview" id="v-goals" hidden>
@@ -748,6 +777,22 @@ footer strong{color:var(--ink)}
     <div class="big num" id="e-worth"></div>
     <dl class="num" id="e-stats"></dl>
     <p id="e-lesson" style="color:var(--muted)"></p>
+    <form class="lb-form" id="lb-form" hidden novalidate onsubmit="return false">
+      <h3 style="font-size:20px">🏆 Enter this month's leaderboard</h3>
+      <p class="lb-note">Your username is shown publicly. Your email stays private and is only used to contact you if you win.</p>
+      <input type="text" id="lb-name" placeholder="Username (3–16 letters or numbers)" maxlength="16" autocomplete="nickname" aria-label="Username">
+      <input type="email" id="lb-email" placeholder="Email" maxlength="254" autocomplete="email" aria-label="Email">
+      <div class="radios" role="radiogroup" aria-label="Your age">
+        <label><input type="radio" name="lb-age" value="18+"> I'm 18 or older</label>
+        <label><input type="radio" name="lb-age" value="15-17"> I'm 15–17</label>
+        <label><input type="radio" name="lb-age" value="u15"> I'm under 15</label>
+      </div>
+      <label class="chk" id="lb-parent-row" hidden><input type="checkbox" id="lb-parent"><span>A parent or guardian knows I'm entering and agrees to my email being used to contact me about a prize.</span></label>
+      <label class="chk"><input type="checkbox" id="lb-rules"><span>I accept the <a href="/rules.html" target="_blank" rel="noopener">contest rules</a>, including how my email is stored and used.</span></label>
+      <p class="err" id="lb-err" role="alert"></p>
+      <button class="btn btn-lime btn-big" type="submit" id="lb-go">Enter the leaderboard</button>
+    </form>
+    <div id="lb-done" hidden></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn btn-lime btn-big" type="button" id="e-again" style="flex:1">Play again</button>
       <button class="btn btn-big" type="button" data-close>Review my game</button>
@@ -1071,11 +1116,21 @@ function snapshot(force){if(isF()){S.worth[S.worth.length-1]=worth();return;}var
 $('level-form').addEventListener('submit',function(){
   var v=(document.querySelector('input[name=level]:checked')||{}).value||'free';
   var md=(document.querySelector('input[name=mode]:checked')||{}).value||'live';
-  S=newGame(v,md);save();view='trade';detailSym=null;showGame();
+  function go(g){S=g;save();view='trade';detailSym=null;showGame();}
+  if(md!=='future'){go(newGame(v,md));return;}
+  var b=$('start');b.disabled=true;b.textContent='Setting up your future…';
+  api('/game/start',{}).then(function(r){
+    var g=newGame(v,md);g.srv=r.id;g.pend=[];g.d0=r.d0||g.d0;LIST.forEach(function(o){var p=r.p0&&r.p0[o.sym];if(p>0)g.P[o.sym]=[p];});go(g);
+  }).catch(function(){var g=newGame(v,md);go(g);flash('Offline game: this one can\u2019t enter the leaderboard.');})
+  .then(function(){b.disabled=false;b.textContent='Start investing';});
 });
+function api(path,body,method){
+  return fetch(API+path,{method:method||(body?'POST':'GET'),headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'})
+    .then(function(r){return r.json().catch(function(){return {};}).then(function(j){if(!r.ok){var e=new Error(j.error||('Error '+r.status));e.status=r.status;throw e;}return j;});});
+}
 
 /* ================= GAME RENDER ================= */
-function showGame(){$('setup').hidden=!!S;$('game').hidden=!S;if(S)setView(view);}
+function showGame(){$('setup').hidden=!!S;$('game').hidden=!S;if(S)setView(view);else if(typeof renderBoard==='function'&&BOARD!==undefined)renderBoard($('setup-board'),$('sb-sub'));}
 function renderBar(){
   var w=worth(),t=today();
   $('g-worth').textContent=usd.format(w);
@@ -1095,13 +1150,14 @@ function renderBar(){
   }
 }
 function setView(v){
-  view=v;['portfolio','trade','news','goals'].forEach(function(x){$('v-'+x).hidden=x!==v;});
+  view=v;['portfolio','trade','news','goals','board'].forEach(function(x){$('v-'+x).hidden=x!==v;});
   Array.prototype.forEach.call(document.querySelectorAll('.view-btn'),function(b){b.setAttribute('aria-pressed',String(b.dataset.view===v));});
   renderBar();
   if(v==='portfolio')renderPortfolio();
   if(v==='trade'){if(detailSym)renderDetail(detailSym);else renderTradeList();}
   if(v==='news')renderGameNews();
   if(v==='goals')drawChecks($('gl-checks'),goals(mix(S.hold,S.cash)));
+  if(v==='board')renderBoard($('game-board'),$('gb-sub'));
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-view]');if(b&&S){if(b.dataset.view==='trade')detailSym=null;setView(b.dataset.view);}});
 function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
@@ -1262,6 +1318,7 @@ $('t-go').addEventListener('click',function(){
   if(T.side==='buy'){if(q*p>S.cash+1e-9)return;h.qty+=q;h.cost+=q*p;h.tq+=q;h.tc+=q*p;S.cash=Math.round((S.cash-q*p)*100)/100;}
   else{if(q>h.qty)return;var avg=h.cost/h.qty;h.cost-=avg*q;h.qty-=q;if(h.tq>h.qty){h.tc=h.tq?h.tc*h.qty/h.tq:0;h.tq=h.qty;}S.cash=Math.round((S.cash+q*p)*100)/100;if(!h.qty)delete S.hold[T.sym];}
   if(h.qty===0&&S.hold[T.sym]&&!S.hold[T.sym].qty)delete S.hold[T.sym];
+  if(isF()&&S.srv){(S.pend=S.pend||[]).push({s:T.sym,side:T.side,n:q});}
   snapshot(true);save();var msg=(T.side==='buy'?'Bought ':'Sold ')+q+' '+T.sym+' for '+usd.format(q*p);
   closeModal('m-trade');renderBar();if(detailSym)renderDetail(detailSym);flash(msg);
 });
@@ -1365,10 +1422,25 @@ function drawLine(c,data,o){
     ctx.beginPath();ctx.moveTo(X(0),Y(data[0]));for(i=1;i<n;i++)ctx.lineTo(X(i),Y(data[i]));ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();}
   (o.marks||[]).forEach(function(m){if(m>0&&m<n){ctx.beginPath();ctx.arc(X(m),Y(data[m]),4.5,0,7);ctx.fillStyle=css('--surface');ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=ink;ctx.stroke();}});
   ctx.beginPath();ctx.arc(X(n-1),Y(data[n-1]),5.5,0,7);ctx.fillStyle='#C6F432';ctx.fill();ctx.lineWidth=2.5;ctx.strokeStyle=ink;ctx.stroke();}
+function applyQuarter(r){
+  var q=S.q,d0=q*QD,w0=worth(),spy0=px('SPY'),p0={};LIST.forEach(function(o){p0[o.sym]=px(o.sym);});
+  for(var i=0;i<QD;i++){LIST.forEach(function(o){S.P[o.sym].push(r.paths[o.sym][i]);});S.worth.push(worth());}
+  S.cash=r.cash;S.div=Math.round((S.div+r.div)*100)/100;S.worth[S.worth.length-1]=worth();
+  r.news.forEach(function(e){var d=d0+e.dd;S.news.push({q:q,d:d,kind:e.kind,t:e.t,why:e.why,fx:e.tags.map(function(s){return {s:s,r:S.P[s][d]/S.P[s][d-1]-1};})});});
+  S.q++;S.pend=[];var best=null,worst=null;LIST.forEach(function(o){var g=px(o.sym)/p0[o.sym]-1;if(!best||g>best.g)best={s:o.sym,g:g};if(!worst||g<worst.g)worst={s:o.sym,g:g};});
+  if(r.finalWorth)S.final=r.finalWorth;
+  var st={q:q,w0:w0,w1:worth(),spy:px('SPY')/spy0-1,div:r.div,best:best,worst:worst};S.qstats.push(st);return st;}
+var busy=false;
 $('next').addEventListener('click',function(){
-  if(!isF()||S.q>=NQ)return;
+  if(!isF()||S.q>=NQ||busy)return;
   if(!mix(S.hold,S.cash).inv){flash('Buy at least one investment first, then press Next quarter.');detailSym=null;setView('trade');return;}
-  var st=simQuarter();save();setView(view);if(S.q>=NQ){showEnd();return;}showRecap(st);});
+  function done(st){save();setView(view);if(S.q>=NQ){showEnd();return;}showRecap(st);}
+  if(!S.srv){done(simQuarter());return;}
+  var nx=$('next');busy=true;nx.disabled=true;nx.textContent='Simulating…';
+  api('/game/next',{id:S.srv,q:S.q,trades:S.pend||[]}).then(function(r){busy=false;done(applyQuarter(r));})
+  .catch(function(e){busy=false;renderBar();
+    if(e.status===409||e.status===404||e.status===400){S.srv=null;save();flash('This game lost its link to the leaderboard. You can keep playing offline.');}
+    else flash('Couldn\u2019t reach the server. Check your connection and press Next quarter again.');});});
 function showRecap(st){var ch=st.w1/st.w0-1;
   $('rc-eyebrow').textContent=qLabel(st.q)+' · '+fmtM(fDate(st.q*QD))+' – '+fmtM(fDate((st.q+1)*QD));
   var c=$('rc-change');c.textContent=sgn$(st.w1-st.w0)+' ('+pct(ch,1)+')';c.className='big num '+(ch>=0?'up':'down');
@@ -1382,8 +1454,49 @@ function showEnd(){
   $('e-worth').textContent=usd.format(w);$('e-worth').className='big num '+(r>=0?'up':'down');
   var dl=$('e-stats');dl.innerHTML='';
   [['Your return over 3 years',pct(r,1)],['All-in S&P 500 fund on day one',pct(br,1)+' ('+usd0.format(b)+')'],['Dividends you collected',usd.format(S.div)]].forEach(function(x){dl.appendChild(el('dt',null,x[0]));dl.appendChild(el('dd',null,x[1]));});
+  setupEntry();
   $('e-lesson').textContent=r>=br?'You beat the simple S&P 500 strategy in this future. Play again to see if your approach keeps working, or if this time was luck.':'The simple S&P 500 strategy beat you in this future. It beats most professional investors too, which is why many people build around index funds.';
   openModal('m-end');}
+function setupEntry(){
+  var f=$('lb-form'),dn=$('lb-done');
+  if(!S.srv){f.hidden=true;dn.hidden=false;dn.innerHTML='';dn.appendChild(el('p','lb-note','This game was played offline, so it can\u2019t enter the leaderboard. Start a new "Simulate the future" game online to compete.'));return;}
+  if(S.lb){f.hidden=true;showEntered(S.lb);return;}
+  f.hidden=false;dn.hidden=true;$('lb-err').textContent='';
+  try{var m=JSON.parse(localStorage.getItem('investeen-lb-me')||'null');if(m){if(!$('lb-name').value)$('lb-name').value=m.name||'';if(!$('lb-email').value)$('lb-email').value=m.email||'';}}catch(e){}
+}
+function showEntered(r){var dn=$('lb-done');dn.hidden=false;dn.innerHTML='';
+  var p=el('p',null,r.kept?'You\u2019re on the board! Your best score this month is still higher, so it stays: rank #'+r.rank+' of '+r.players+'.':'You\u2019re on the board at rank #'+r.rank+' of '+r.players+' this month!');p.style.fontWeight='700';dn.appendChild(p);
+  var b=el('button','btn','See the leaderboard');b.type='button';b.addEventListener('click',function(){closeModal('m-end');setView('board');});dn.appendChild(b);}
+Array.prototype.forEach.call(document.querySelectorAll('input[name=lb-age]'),function(r){r.addEventListener('change',function(){$('lb-parent-row').hidden=this.value!=='15-17';
+  $('lb-err').textContent=this.value==='u15'?'Sorry, you need to be 15 or older to enter. You can still play as much as you like!':'';$('lb-go').disabled=this.value==='u15';});});
+$('lb-form').addEventListener('submit',function(){
+  var age=(document.querySelector('input[name=lb-age]:checked')||{}).value,err=$('lb-err'),name=$('lb-name').value.trim(),email=$('lb-email').value.trim();
+  if(!/^[A-Za-z0-9_.]{3,16}$/.test(name)){err.textContent='Pick a username of 3\u201316 letters, numbers, dots or underscores.';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){err.textContent='Please enter a valid email address.';return;}
+  if(!age){err.textContent='Please tell us your age group.';return;}
+  if(age==='u15'){err.textContent='Sorry, you need to be 15 or older to enter.';return;}
+  if(age==='15-17'&&!$('lb-parent').checked){err.textContent='Players under 18 need a parent or guardian to agree.';return;}
+  if(!$('lb-rules').checked){err.textContent='Please accept the contest rules.';return;}
+  var b=$('lb-go');b.disabled=true;b.textContent='Entering…';err.textContent='';
+  api('/leaderboard',{id:S.srv,name:name,email:email,age:age,parent:$('lb-parent').checked,rules:true}).then(function(r){
+    S.lb=r;save();try{localStorage.setItem('investeen-lb-me',JSON.stringify({name:name,email:email}));}catch(e){}BOARD=null;$('lb-form').hidden=true;showEntered(r);
+  }).catch(function(e){err.textContent=e.message||'Something went wrong. Try again.';}).then(function(){b.disabled=false;b.textContent='Enter the leaderboard';});
+});
+
+/* ================= LEADERBOARD ================= */
+var BOARD=null,BOARD_AT=0;
+function loadBoard(){if(BOARD&&Date.now()-BOARD_AT<60000)return Promise.resolve(BOARD);return api('/leaderboard').then(function(j){BOARD=j;BOARD_AT=Date.now();return j;});}
+function monthName(m){return MON[+m.slice(5,7)-1]+' '+m.slice(0,4);}
+function renderBoard(box,sub){box.innerHTML='';box.appendChild(el('p','lb-note','Loading the leaderboard\u2026'));
+  loadBoard().then(function(j){box.innerHTML='';if(sub)sub.textContent=monthName(j.month)+' \u00b7 '+j.players+' player'+(j.players===1?'':'s');
+    var me=null;try{me=(JSON.parse(localStorage.getItem('investeen-lb-me')||'null')||{}).name;}catch(e){}
+    if(!j.entries.length)box.appendChild(el('p','lb-note','No one has entered yet this month. Finish a "Simulate the future" game and be the first!'));
+    else{var ul=el('ul','lb-list');j.entries.forEach(function(e){var li=el('li',me&&e.name.toLowerCase()===me.toLowerCase()?'me':'');li.appendChild(el('span','rk',String(e.rank)));li.appendChild(el('span','nm',e.name));
+      var rt=el('span','rt num',pct(e.ret,1));rt.style.color=e.ret>=0?'var(--gain)':'var(--loss)';li.appendChild(rt);ul.appendChild(li);});box.appendChild(ul);}
+    if(j.prev&&j.prev.top&&j.prev.top.length){var pw=el('p','lb-note','Last month\u2019s winner ('+monthName(j.prev.month)+'): '+j.prev.top[0].name+' with '+pct(j.prev.top[0].ret,1));pw.style.marginTop='12px';box.appendChild(pw);}
+  }).catch(function(){box.innerHTML='';box.appendChild(el('p','lb-note','The leaderboard shows up on your InvesTeen website.'));});}
+renderBoard($('setup-board'),$('sb-sub'));
+
 $('e-again').addEventListener('click',function(){closeModal('m-end');S=null;try{localStorage.removeItem(KEY);}catch(e){}detailSym=null;view='portfolio';showGame();window.scrollTo(0,0);});
 
 /* ================= UPDATES ================= */
