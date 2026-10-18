@@ -287,19 +287,26 @@ td .tk{display:flex;align-items:center;gap:10px;font-weight:700}
 .card dl{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0;font-size:15px}
 .card dt{color:var(--muted)} .card dd{margin:0;font-weight:700;text-align:right}
 .card.reader{max-width:640px;padding:0;gap:0}
-.reader .r-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--sunk);border-radius:var(--r-lg) var(--r-lg) 0 0}
 .reader .r-body{padding:clamp(22px,4vw,34px);display:flex;flex-direction:column;gap:14px}
 .reader .r-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px;font-weight:700;color:var(--muted)}
 .reader .r-meta .label{background:var(--lime);color:var(--on-lime);padding:3px 10px;border-radius:999px}
-.reader h2{padding-right:0;overflow-wrap:anywhere}
-.reader.no-img h2,.reader.no-img .r-meta{padding-right:48px}
+.reader h2,.reader .r-meta{padding-right:48px;overflow-wrap:anywhere}
 .reader .r-sum{font-size:17px;line-height:1.6;margin:0}
 .reader .r-box{background:var(--sunk);border-radius:var(--r-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
-.reader .r-stocks{display:flex;gap:8px;flex-wrap:wrap}
-.reader .r-stocks button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;gap:8px;align-items:center}
+.reader .r-sec{display:flex;flex-direction:column;gap:8px}
+.reader .r-impact{border-left:4px solid var(--lime)}
+.reader .r-impact p{margin:0;font-size:16px;line-height:1.6}
+.reader .r-topics{display:flex;gap:6px;flex-wrap:wrap}
+.reader .r-topics span{background:var(--lime);color:var(--on-lime);font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.reader .r-mood{font-size:15px!important;font-weight:700}
+.reader .r-watch{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.reader .r-watch button{width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-md);padding:12px 14px;font:inherit;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:baseline}
+.reader .r-watch b{font-size:15px}
+.reader .r-watch .px{font-size:14px;font-weight:700;text-align:right}
+.reader .r-watch .why{grid-column:1/-1;font-size:14px;color:var(--muted)}
 .reader .r-note{font-size:13px;color:var(--muted);margin:0}
-.reader .x{background:rgba(7,21,40,.7);color:#fff}
-.reader.no-img .x{background:var(--sunk);color:var(--ink)}
+.story .topic{font-size:13px;font-weight:700;color:var(--muted)}
+.story.lead .topic{color:var(--on-lime)}
 .story h3 a,.feed .hd a{cursor:pointer}
 .x{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;border:0;background:var(--sunk);color:var(--ink);font-size:22px;cursor:pointer;display:grid;place-items:center}
 .sidetoggle{display:grid;grid-template-columns:1fr 1fr;background:var(--sunk);border-radius:999px;padding:4px;gap:4px}
@@ -684,16 +691,25 @@ footer strong{color:var(--ink)}
 <div class="overlay" id="m-read" hidden>
   <div class="card reader" role="dialog" aria-modal="true" aria-labelledby="r-title">
     <button class="x" type="button" data-close aria-label="Close">×</button>
-    <img class="r-img" id="r-img" alt="" referrerpolicy="no-referrer" hidden>
     <div class="r-body">
       <div class="r-meta"><span class="label" id="r-src"></span><span id="r-time"></span></div>
       <h2 id="r-title"></h2>
-      <p class="r-sum" id="r-sum"></p>
-      <div class="r-box" id="r-stockbox" hidden>
-        <span class="label">Stocks in this story</span>
-        <div class="r-stocks" id="r-stocks"></div>
+      <section class="r-sec">
+        <span class="label">What happened</span>
+        <p class="r-sum" id="r-sum"></p>
+      </section>
+      <section class="r-box r-impact">
+        <span class="label">How this could move the market</span>
+        <div class="r-topics" id="r-topics"></div>
+        <div id="r-explain"></div>
+        <p class="r-mood" id="r-mood"></p>
+      </section>
+      <section class="r-sec" id="r-stockbox" hidden>
+        <span class="label">Stocks &amp; funds to watch</span>
+        <ul class="r-watch" id="r-stocks"></ul>
         <p class="r-note">Tap one to see its price and trade it in the simulator.</p>
-      </div>
+      </section>
+      <p class="r-note">InvesTeen wrote this explanation to help you learn how news and markets connect. It isn't financial advice.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-lime btn-big" type="button" data-close style="flex:1">Back to news</button>
         <a class="btn btn-big" id="r-link" target="_blank" rel="noopener" style="flex:1;text-align:center">Full story</a>
@@ -887,26 +903,94 @@ function newsItem(n,lead){
   var a=el('article','story'+(lead?' lead':''));
   a.appendChild(el('span','label',n.source||'News'));
   var h=el('h3');var link=el('a',null,n.headline);readLink(link,n);link.style.textDecoration='none';h.appendChild(link);a.appendChild(h);
-  if(n.summary)a.appendChild(el('p',null,n.summary.length>220?n.summary.slice(0,217).replace(/\s+\S*$/,'')+'…':n.summary));
+  var cs=cleanSummary(n);if(cs)a.appendChild(el('p',null,cs.length>220?cs.slice(0,217).replace(/\s+\S*$/,'')+'…':cs));
+  var tp=newsTopics(n)[0];a.appendChild(el('span','topic','Why it matters: '+(tp?tp.k:'General news')));
   var sl=el('div','src-line');sl.appendChild(el('span',null,n.datetime?ago(n.datetime*1000):''));
-  var rl=el('a',null,'Read more');readLink(rl,n);sl.appendChild(rl);a.appendChild(sl);
+  var rl=el('a',null,'Read & see market impact');readLink(rl,n);sl.appendChild(rl);a.appendChild(sl);
   return a;
 }
 function readLink(a,n){a.href=n.url;a.addEventListener('click',function(e){if(e.metaKey||e.ctrlKey||e.shiftKey)return;e.preventDefault();openReader(n);});}
+/* Market-impact explainer: matches a story to topics and explains, in plain words, how that kind of news tends to move markets. */
+var TOPICS=[
+ {k:'Interest rates',re:/\b(fed|federal reserve|fomc|powell|interest rates?|rate (cut|hike|rise|increase)s?|central banks?|ecb|bank of england|bank of japan|borrowing costs|treasury yields?|bond yields?)\b/,
+  t:'Interest rates are the price of borrowing money, and they move almost everything in the market. When rates go up, loans for homes, cars and businesses get more expensive, so companies grow more slowly and stock prices often fall, especially fast-growing tech companies. When rates go down, the opposite usually happens. Bond prices move the opposite way to rates: higher rates mean lower bond prices.',
+  w:[['QQQ','Tech and growth stocks react strongly to rate changes'],['TLT','Long-term bonds move the most when rates change'],['XLF','Banks can earn more on loans when rates are higher'],['XLRE','Real estate depends on borrowed money']]},
+ {k:'Inflation',re:/\b(inflation|cpi|consumer prices|price index|pce|cost of living|prices (rose|rise|jumped|climbed))\b/,
+  t:'Inflation means prices are rising and money buys less. If inflation comes in higher than expected, investors worry the central bank will keep interest rates high, which usually pushes both stocks and bonds down. If inflation cools, markets often rally because rate cuts become more likely.',
+  w:[['SPY','The whole market reacts to inflation surprises'],['TLT','Bonds lose value when inflation stays high'],['XLP','Companies selling everyday goods can often raise their prices']]},
+ {k:'The economy',re:/\b(jobs report|payrolls?|unemployment|jobless|hiring|layoffs?|job cuts|gdp|recession|economic growth|economy|economic|retail sales|consumer spending|factory|manufacturing)\b/,
+  t:'Investors watch the economy to guess how much money companies will make. Strong hiring and spending usually mean more sales and profits, which is good for stocks. Signs of a slowdown, like layoffs or a shrinking economy, make investors nervous and push them toward safer investments like bonds.',
+  w:[['SPY','Tracks the 500 biggest US companies'],['IWV','Includes smaller companies, which feel the economy the most'],['XLI','Factories and transport rise and fall with the economy'],['BND','Bonds are where nervous investors often go']]},
+ {k:'Oil & energy',re:/\b(oil|crude|opec|brent|gasoline|natural gas|fuel|refiner(y|ies)|energy prices|pipelines?)\b/,
+  t:'Oil prices affect almost everyone. When oil goes up, energy companies earn more and their stocks usually rise. But higher fuel costs hurt airlines, delivery companies and shoppers, who are left with less money to spend on other things. When oil falls, the opposite tends to happen.',
+  w:[['XLE','Energy companies earn more when oil prices rise'],['CVX','One of the biggest US oil companies'],['F','Expensive gas can hurt sales of big trucks and SUVs']]},
+ {k:'World events',re:/\b(wars?|attack(s|ed)?|missiles?|military|troops|airstrikes?|drones?|conflict|sanctions?|ceasefire|coalition|invasion|terror\w*|hostages?|nuclear|iran|israel|gaza|lebanon|russia|ukraine|houthis?|yemen|saudi|middle east|north korea|taiwan|iraq\w*|syria)\b/,
+  t:'Conflicts and political tension make investors nervous because they add uncertainty. When the danger looks serious, people often sell stocks and buy safer things like government bonds. If the trouble is near big oil producers, like the Middle East, oil prices can jump because supplies might be disrupted. Most of the time, though, markets calm down quickly unless the conflict spreads.',
+  w:[['XLE','Oil can jump when there is trouble near oil-producing countries'],['TLT','Government bonds are a classic safe place in scary times'],['XLI','Includes defense companies that build military equipment'],['SPY','Shows the overall mood of the market']]},
+ {k:'Trade & China',re:/\b(tariffs?|trade (war|deal|talks|deficit)|exports?|imports?|customs|supply chains?|china|chinese|beijing|xi jinping)\b/,
+  t:'Many big US companies make or sell products abroad, especially in China. Tariffs are taxes on imported goods, so they raise costs for companies and prices for shoppers. Trade fights usually hurt companies with factories or customers overseas, while trade deals can give them a boost.',
+  w:[['AAPL','Builds most iPhones in Asia and sells many in China'],['NKE','Makes most of its shoes and clothes in Asia'],['TSLA','Has a big factory and many customers in China']]},
+ {k:'AI & chips',re:/\b(ai|artificial intelligence|chips?|chipmakers?|semiconductors?|gpus?|data cent(er|re)s?|nvidia|openai|chatbots?)\b/,
+  t:'Artificial intelligence is one of the biggest stories in today’s market. Companies that make AI chips or run huge data centers have seen their stocks soar, so news about AI demand can move them a lot, in both directions. Because these companies are so large, they can move the whole tech market with them.',
+  w:[['NVDA','The leading maker of AI chips'],['MSFT','Spends billions on AI and cloud computing'],['GOOG','Builds its own AI models and chips'],['QQQ','Packed with the biggest tech companies']]},
+ {k:'Company results',re:/\b(earnings|quarterly|profits?|revenue|guidance|forecasts?|outlook|beats? (estimates|expectations)|miss(es|ed)? (estimates|expectations)|results)\b/,
+  t:'A stock price is really a bet on how much money a company will make in the future. When a company reports profits that beat what experts expected, the stock usually jumps. When it misses, or warns that the future looks weaker, the stock often drops, sometimes a lot in a single day.',w:[]},
+ {k:'Cars & EVs',re:/\b(electric vehicles?|evs?|automakers?|carmakers?|car sales|vehicles?|tesla|ford|general motors|self-driving|robotaxis?)\b/,
+  t:'Car companies depend on people having money and on cheap loans, since most cars are bought on credit. Electric vehicles are a fast-moving race, so news about sales, prices or new technology can swing car stocks sharply.',
+  w:[['TSLA','The biggest electric car maker in the US'],['F','Sells trucks and a growing range of EVs'],['GM','Makes Chevrolet, GMC and Cadillac cars']]},
+ {k:'Health & medicine',re:/\b(fda|drugs?|vaccines?|pharma\w*|clinical trials?|medicines?|health ?care|hospitals?|weight-loss|obesity|cancer|disease|outbreak)\b/,
+  t:'Drug companies spend years and billions of dollars developing new medicines. A drug getting approved, a trial succeeding or failing, or new rules on drug prices can make their stocks jump or fall fast. Health stocks are often seen as steady, because people need medicine in good times and bad.',
+  w:[['PFE','Makes vaccines and many medicines'],['JNJ','A giant in medicines and medical devices'],['XLV','Holds many health care companies at once']]},
+ {k:'Shopping & spending',re:/\b(shoppers?|consumers?|retail(ers?)?|holiday (season|sales)|black friday|spending|restaurants?|coffee|sneakers?|apparel|groceries|stores?)\b/,
+  t:'Shoppers drive about two-thirds of the US economy. When people feel confident and spend more, stores, restaurants and brands sell more and their stocks tend to rise. When people cut back, these companies are usually among the first to feel it.',
+  w:[['AMZN','The biggest online store'],['HD','Sells to people fixing up their homes'],['SBUX','Depends on everyday treats people can skip'],['XLP','Everyday essentials people buy no matter what']]},
+ {k:'Crypto',re:/\b(bitcoin|crypto\w*|ethereum|blockchain|stablecoins?)\b/,
+  t:'Crypto prices swing much more than stocks. Big moves in Bitcoin often show how much risk investors are willing to take: when crypto rallies, risky tech stocks often rise too, and when it crashes, investors may pull back from risk in general. The simulator doesn’t include crypto, but tech can feel the effect.',
+  w:[['QQQ','Risky tech stocks often move with crypto'],['TSLA','Has owned Bitcoin and is popular with risk-takers']]},
+ {k:'Laws & regulators',re:/\b(antitrust|lawsuits?|sued|sues|court|judge|regulators?|fined|fines|probe|investigation|banned|monopoly|congress|senate|legislation)\b/,
+  t:'When governments or courts go after a company, investors worry about fines, new rules or even the company being broken up. The stock often dips on the news, but the real impact depends on how big the penalty is compared with the size of the company.',w:[]},
+ {k:'Housing',re:/\b(housing|home sales|mortgages?|home prices|homebuilders?|real estate|rents?|landlords?)\b/,
+  t:'Housing is closely tied to interest rates, because most homes are bought with a mortgage. When mortgage rates rise, fewer people buy homes, which hurts home builders, home improvement stores and real estate companies.',
+  w:[['HD','Sells to homeowners and builders'],['XLRE','Holds real estate companies']]},
+ {k:'Media & entertainment',re:/\b(disney|streaming|box office|movies?|films?|netflix|theme parks?|advertising|social media|tiktok)\b/,
+  t:'Media companies earn money from subscriptions, ads, movies and theme parks. Subscriber numbers and ad spending are the big things investors watch, and both tend to fall when the economy slows.',
+  w:[['DIS','Movies, streaming and theme parks'],['XLC','Holds media and communication companies'],['GOOG','Earns most of its money from ads']]},
+ {k:'Banks & finance',re:/\b(banks?|banking|lenders?|jpmorgan|goldman|wall street|loans?|credit)\b/,
+  t:'Banks are the plumbing of the economy. Their profits depend on interest rates and on borrowers paying back loans. Trouble at a big bank can make the whole market nervous, while strong bank results suggest the economy is healthy.',
+  w:[['XLF','Holds the biggest US banks and insurers']]}
+];
+var GENERAL='Not every headline moves the stock market. Investors mainly react to news that changes how much companies will earn, like interest rates, the state of the economy or a company’s own results. A story like this will likely matter most to the people, companies or countries involved, rather than to the market as a whole.';
+var GOOD=/\b(surge[sd]?|soar(s|ed|ing)?|jump(s|ed)?|rall(y|ies|ied)|gains?|gained|rises?|rose|record highs?|beats?|boost(s|ed)?|growth|strong(er)?|upgrade[sd]?|approv(es|ed|al)|deal|rate cuts?|cuts? rates|ceasefire|peace|recover(s|y|ed)?|hires?|hiring)\b/g;
+var BAD=/\b(falls?|fallen|fell|drop(s|ped)?|plunge[sd]?|slump(s|ed)?|tumble[sd]?|sinks?|sank|loss(es)?|miss(es|ed)?|weak(er|ens)?|layoffs?|job cuts|crash(es|ed)?|kill(s|ed|ing)?|wars?|attacks?|fears?|worr(y|ies|ied)|warns?|warned|warning|recession|downgrade[sd]?|lawsuits?|probe|tariffs?|slow(s|ing|down)|crisis|default|bankrupt\w*|strikes?)\b/g;
+function newsTopics(n){var txt=((n.headline||'')+' '+(n.summary||'')).toLowerCase();return TOPICS.filter(function(t){return t.re.test(txt);});}
+function newsMood(n){var txt=((n.headline||'')+' '+(n.summary||'')).toLowerCase();var g=(txt.match(GOOD)||[]).length,b=(txt.match(BAD)||[]).length;return g>b?1:b>g?-1:0;}
+function cleanSummary(n){var s=(n.summary||'').replace(/\s+/g,' ').trim();if(!s)return '';
+  var norm=function(x){return x.toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();};
+  var h=norm((n.headline||'').replace(/\s+-\s+[^-]+$/,''));var sn=norm(s);
+  if(h&&(sn===h||sn.indexOf(h)===0&&sn.length<h.length+40))return '';return s;}
 function openReader(n){
-  var card=$('m-read').querySelector('.reader'),img=$('r-img');
-  img.hidden=true;card.classList.add('no-img');img.removeAttribute('src');
-  if(n.image){img.onload=function(){img.hidden=false;card.classList.remove('no-img');};img.onerror=function(){img.hidden=true;card.classList.add('no-img');};img.src=n.image;}
+  var card=$('m-read').querySelector('.reader');
   $('r-src').textContent=n.source||'News';
   $('r-time').textContent=n.datetime?new Date(n.datetime*1000).toLocaleString([], {weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})+' · '+ago(n.datetime*1000):'';
   $('r-title').textContent=n.headline;
-  $('r-sum').textContent=n.summary||'This story has no summary. Use the Full story button to read it on '+(n.source||'the publisher')+'.';
+  var sum=cleanSummary(n);
+  $('r-sum').textContent=sum||'This publisher only shared the headline above. The full details are in the original story, and below we explain what news like this can mean for the market.';
+  var tops=newsTopics(n).slice(0,2),tb=$('r-topics'),ex=$('r-explain');tb.innerHTML='';ex.innerHTML='';
+  if(!tops.length){tb.appendChild(el('span',null,'General news'));ex.appendChild(el('p',null,GENERAL));}
+  tops.forEach(function(t,i){tb.appendChild(el('span',null,t.k));var p=el('p',null,t.t);if(i)p.style.marginTop='10px';ex.appendChild(p);});
+  var m=newsMood(n),mood=$('r-mood');
+  mood.textContent=m>0?'\u{1F4C8} Headline mood: mostly positive. Good-news stories like this tend to lift the stocks involved.':m<0?'\u{1F4C9} Headline mood: worrying. News like this can make investors sell, at least for a while.':'➖ Headline mood: neutral or mixed. The market may not react much unless more news follows.';
+  var watch=[],seen={};
+  (n.related||'').split(',').map(function(s){return s.trim().toUpperCase();}).forEach(function(s){if(A[s]&&!seen[s]){seen[s]=1;watch.push([s,'Mentioned in this story']);}});
+  tops.forEach(function(t){t.w.forEach(function(w){if(A[w[0]]&&!seen[w[0]]){seen[w[0]]=1;watch.push(w);}});});
+  watch=watch.slice(0,5);
   var box=$('r-stocks');box.innerHTML='';
-  var syms=(n.related||'').split(',').map(function(s){return s.trim().toUpperCase();}).filter(function(s){return A[s];}).slice(0,6);
-  syms.forEach(function(s){var b=el('button');b.type='button';b.appendChild(el('span',null,s));
-    var c=liveDayChg(s);if(isFinite(c)){var sp=el('span',null,usd.format(livePx(s))+' '+pct(c,1));sp.style.color=c>=0?'var(--gain)':'var(--loss)';b.appendChild(sp);}
-    b.addEventListener('click',function(){closeModal('m-read');go('simulator',true);if(S)openDetail(s);});box.appendChild(b);});
-  $('r-stockbox').hidden=!syms.length;
+  watch.forEach(function(w){var s=w[0],li=el('li'),b=el('button');b.type='button';
+    b.appendChild(el('b',null,s+' · '+A[s].name));
+    var c=liveDayChg(s),px=el('span','px',usd.format(livePx(s))+(isFinite(c)?' '+pct(c,1):''));if(isFinite(c))px.style.color=c>=0?'var(--gain)':'var(--loss)';b.appendChild(px);
+    b.appendChild(el('span','why',w[1]));
+    b.addEventListener('click',function(){closeModal('m-read');go('simulator',true);if(S)openDetail(s);});li.appendChild(b);box.appendChild(li);});
+  $('r-stockbox').hidden=!watch.length;
   var rl=$('r-link');rl.href=n.url;rl.textContent='Full story on '+(n.source||'source')+' ↗';
   openModal('m-read');card.scrollTop=0;
 }
