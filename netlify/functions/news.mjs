@@ -37,7 +37,8 @@ export default async (req) => {
     .map((n) => ({
       headline: n.headline,
       source: n.source,
-      summary: (n.summary || '').slice(0, 400),
+      summary: (n.summary || '').slice(0, 1200),
+      image: /^https:\/\//.test(n.image || '') ? n.image : '',
       url: n.url,
       datetime: n.datetime,
       related: n.related || ''
