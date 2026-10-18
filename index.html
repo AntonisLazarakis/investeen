@@ -874,7 +874,7 @@ async function refreshQuotes(){
 var NEWS={items:null,updated:0};
 async function refreshNews(){
   try{var r=await fetch(API+'/news',{cache:'no-store'});if(!r.ok)throw 0;var j=await r.json();
-    if(!j||!Array.isArray(j.items)||!j.items.length)throw 0;NEWS.items=j.items;NEWS.updated=j.updated||Date.now();}
+    if(!j||!Array.isArray(j.items)||!j.items.length)throw 0;NEWS.items=j.items.filter(function(n){return cleanSummary(n);}).concat(j.items.filter(function(n){return !cleanSummary(n);}));NEWS.updated=j.updated||Date.now();}
   catch(e){if(!NEWS.items)NEWS.items=[];}
   renderHomeNews();if(S&&view==='news')renderGameNews();
 }
@@ -902,7 +902,7 @@ function renderTape(){
 function newsItem(n,lead){
   var a=el('article','story'+(lead?' lead':''));
   a.appendChild(el('span','label',n.source||'News'));
-  var h=el('h3');var link=el('a',null,n.headline);readLink(link,n);link.style.textDecoration='none';h.appendChild(link);a.appendChild(h);
+  var h=el('h3');var link=el('a',null,cleanHead(n));readLink(link,n);link.style.textDecoration='none';h.appendChild(link);a.appendChild(h);
   var cs=cleanSummary(n);if(cs)a.appendChild(el('p',null,cs.length>220?cs.slice(0,217).replace(/\s+\S*$/,'')+'…':cs));
   var tp=newsTopics(n)[0];a.appendChild(el('span','topic','Why it matters: '+(tp?tp.k:'General news')));
   var sl=el('div','src-line');sl.appendChild(el('span',null,n.datetime?ago(n.datetime*1000):''));
@@ -912,50 +912,50 @@ function newsItem(n,lead){
 function readLink(a,n){a.href=n.url;a.addEventListener('click',function(e){if(e.metaKey||e.ctrlKey||e.shiftKey)return;e.preventDefault();openReader(n);});}
 /* Market-impact explainer: matches a story to topics and explains, in plain words, how that kind of news tends to move markets. */
 var TOPICS=[
- {k:'Interest rates',re:/\b(fed|federal reserve|fomc|powell|interest rates?|rate (cut|hike|rise|increase)s?|central banks?|ecb|bank of england|bank of japan|borrowing costs|treasury yields?|bond yields?)\b/,
+ {k:'Interest rates',s:'It is about interest rates and central banks, which decide how expensive it is to borrow money.',re:/\b(fed|federal reserve|fomc|powell|interest rates?|rate (cut|hike|rise|increase)s?|central banks?|ecb|bank of england|bank of japan|borrowing costs|treasury yields?|bond yields?)\b/,
   t:'Interest rates are the price of borrowing money, and they move almost everything in the market. When rates go up, loans for homes, cars and businesses get more expensive, so companies grow more slowly and stock prices often fall, especially fast-growing tech companies. When rates go down, the opposite usually happens. Bond prices move the opposite way to rates: higher rates mean lower bond prices.',
   w:[['QQQ','Tech and growth stocks react strongly to rate changes'],['TLT','Long-term bonds move the most when rates change'],['XLF','Banks can earn more on loans when rates are higher'],['XLRE','Real estate depends on borrowed money']]},
- {k:'Inflation',re:/\b(inflation|cpi|consumer prices|price index|pce|cost of living|prices (rose|rise|jumped|climbed))\b/,
+ {k:'Inflation',s:'It is about inflation, meaning how fast prices are rising for everyday things.',re:/\b(inflation|cpi|consumer prices|price index|pce|cost of living|prices (rose|rise|jumped|climbed))\b/,
   t:'Inflation means prices are rising and money buys less. If inflation comes in higher than expected, investors worry the central bank will keep interest rates high, which usually pushes both stocks and bonds down. If inflation cools, markets often rally because rate cuts become more likely.',
   w:[['SPY','The whole market reacts to inflation surprises'],['TLT','Bonds lose value when inflation stays high'],['XLP','Companies selling everyday goods can often raise their prices']]},
- {k:'The economy',re:/\b(jobs report|payrolls?|unemployment|jobless|hiring|layoffs?|job cuts|gdp|recession|economic growth|economy|economic|retail sales|consumer spending|factory|manufacturing)\b/,
+ {k:'The economy',s:'It is about the health of the economy, such as jobs, spending and growth.',re:/\b(jobs report|payrolls?|unemployment|jobless|hiring|layoffs?|job cuts|gdp|recession|economic growth|economy|economic|retail sales|consumer spending|factory|manufacturing)\b/,
   t:'Investors watch the economy to guess how much money companies will make. Strong hiring and spending usually mean more sales and profits, which is good for stocks. Signs of a slowdown, like layoffs or a shrinking economy, make investors nervous and push them toward safer investments like bonds.',
   w:[['SPY','Tracks the 500 biggest US companies'],['IWV','Includes smaller companies, which feel the economy the most'],['XLI','Factories and transport rise and fall with the economy'],['BND','Bonds are where nervous investors often go']]},
- {k:'Oil & energy',re:/\b(oil|crude|opec|brent|gasoline|natural gas|fuel|refiner(y|ies)|energy prices|pipelines?)\b/,
+ {k:'Oil & energy',s:'It is about oil and energy, from fuel prices to the companies that produce it.',re:/\b(oil|crude|opec|brent|gasoline|natural gas|fuel|refiner(y|ies)|energy prices|pipelines?)\b/,
   t:'Oil prices affect almost everyone. When oil goes up, energy companies earn more and their stocks usually rise. But higher fuel costs hurt airlines, delivery companies and shoppers, who are left with less money to spend on other things. When oil falls, the opposite tends to happen.',
   w:[['XLE','Energy companies earn more when oil prices rise'],['CVX','One of the biggest US oil companies'],['F','Expensive gas can hurt sales of big trucks and SUVs']]},
- {k:'World events',re:/\b(wars?|attack(s|ed)?|missiles?|military|troops|airstrikes?|drones?|conflict|sanctions?|ceasefire|coalition|invasion|terror\w*|hostages?|nuclear|iran|israel|gaza|lebanon|russia|ukraine|houthis?|yemen|saudi|middle east|north korea|taiwan|iraq\w*|syria)\b/,
+ {k:'World events',s:'It is a world-events story about security and politics, the kind of news investors watch because tension can shake markets and oil prices.',re:/\b(wars?|attack(s|ed)?|missiles?|military|troops|airstrikes?|drones?|conflict|sanctions?|ceasefire|coalition|invasion|terror\w*|hostages?|nuclear|iran|israel|gaza|lebanon|russia|ukraine|houthis?|yemen|saudi|middle east|north korea|taiwan|iraq\w*|syria)\b/,
   t:'Conflicts and political tension make investors nervous because they add uncertainty. When the danger looks serious, people often sell stocks and buy safer things like government bonds. If the trouble is near big oil producers, like the Middle East, oil prices can jump because supplies might be disrupted. Most of the time, though, markets calm down quickly unless the conflict spreads.',
   w:[['XLE','Oil can jump when there is trouble near oil-producing countries'],['TLT','Government bonds are a classic safe place in scary times'],['XLI','Includes defense companies that build military equipment'],['SPY','Shows the overall mood of the market']]},
- {k:'Trade & China',re:/\b(tariffs?|trade (war|deal|talks|deficit)|exports?|imports?|customs|supply chains?|china|chinese|beijing|xi jinping)\b/,
+ {k:'Trade & China',s:'It is about trade between countries, including tariffs and China.',re:/\b(tariffs?|trade (war|deal|talks|deficit)|exports?|imports?|customs|supply chains?|china|chinese|beijing|xi jinping)\b/,
   t:'Many big US companies make or sell products abroad, especially in China. Tariffs are taxes on imported goods, so they raise costs for companies and prices for shoppers. Trade fights usually hurt companies with factories or customers overseas, while trade deals can give them a boost.',
   w:[['AAPL','Builds most iPhones in Asia and sells many in China'],['NKE','Makes most of its shoes and clothes in Asia'],['TSLA','Has a big factory and many customers in China']]},
- {k:'AI & chips',re:/\b(ai|artificial intelligence|chips?|chipmakers?|semiconductors?|gpus?|data cent(er|re)s?|nvidia|openai|chatbots?)\b/,
+ {k:'AI & chips',s:'It is about artificial intelligence and the computer chips that power it.',re:/\b(ai|artificial intelligence|chips?|chipmakers?|semiconductors?|gpus?|data cent(er|re)s?|nvidia|openai|chatbots?)\b/,
   t:'Artificial intelligence is one of the biggest stories in today’s market. Companies that make AI chips or run huge data centers have seen their stocks soar, so news about AI demand can move them a lot, in both directions. Because these companies are so large, they can move the whole tech market with them.',
   w:[['NVDA','The leading maker of AI chips'],['MSFT','Spends billions on AI and cloud computing'],['GOOG','Builds its own AI models and chips'],['QQQ','Packed with the biggest tech companies']]},
- {k:'Company results',re:/\b(earnings|quarterly|profits?|revenue|guidance|forecasts?|outlook|beats? (estimates|expectations)|miss(es|ed)? (estimates|expectations)|results)\b/,
+ {k:'Company results',s:'It is about how a company is doing, such as its sales and profits.',re:/\b(earnings|quarterly|profits?|revenue|guidance|forecasts?|outlook|beats? (estimates|expectations)|miss(es|ed)? (estimates|expectations)|results)\b/,
   t:'A stock price is really a bet on how much money a company will make in the future. When a company reports profits that beat what experts expected, the stock usually jumps. When it misses, or warns that the future looks weaker, the stock often drops, sometimes a lot in a single day.',w:[]},
- {k:'Cars & EVs',re:/\b(electric vehicles?|evs?|automakers?|carmakers?|car sales|vehicles?|tesla|ford|general motors|self-driving|robotaxis?)\b/,
+ {k:'Cars & EVs',s:'It is about cars and electric vehicles.',re:/\b(electric vehicles?|evs?|automakers?|carmakers?|car sales|vehicles?|tesla|ford|general motors|self-driving|robotaxis?)\b/,
   t:'Car companies depend on people having money and on cheap loans, since most cars are bought on credit. Electric vehicles are a fast-moving race, so news about sales, prices or new technology can swing car stocks sharply.',
   w:[['TSLA','The biggest electric car maker in the US'],['F','Sells trucks and a growing range of EVs'],['GM','Makes Chevrolet, GMC and Cadillac cars']]},
- {k:'Health & medicine',re:/\b(fda|drugs?|vaccines?|pharma\w*|clinical trials?|medicines?|health ?care|hospitals?|weight-loss|obesity|cancer|disease|outbreak)\b/,
+ {k:'Health & medicine',s:'It is about health and medicine.',re:/\b(fda|drugs?|vaccines?|pharma\w*|clinical trials?|medicines?|health ?care|hospitals?|weight-loss|obesity|cancer|disease|outbreak)\b/,
   t:'Drug companies spend years and billions of dollars developing new medicines. A drug getting approved, a trial succeeding or failing, or new rules on drug prices can make their stocks jump or fall fast. Health stocks are often seen as steady, because people need medicine in good times and bad.',
   w:[['PFE','Makes vaccines and many medicines'],['JNJ','A giant in medicines and medical devices'],['XLV','Holds many health care companies at once']]},
- {k:'Shopping & spending',re:/\b(shoppers?|consumers?|retail(ers?)?|holiday (season|sales)|black friday|spending|restaurants?|coffee|sneakers?|apparel|groceries|stores?)\b/,
+ {k:'Shopping & spending',s:'It is about shoppers and how much people are spending.',re:/\b(shoppers?|consumers?|retail(ers?)?|holiday (season|sales)|black friday|spending|restaurants?|coffee|sneakers?|apparel|groceries|stores?)\b/,
   t:'Shoppers drive about two-thirds of the US economy. When people feel confident and spend more, stores, restaurants and brands sell more and their stocks tend to rise. When people cut back, these companies are usually among the first to feel it.',
   w:[['AMZN','The biggest online store'],['HD','Sells to people fixing up their homes'],['SBUX','Depends on everyday treats people can skip'],['XLP','Everyday essentials people buy no matter what']]},
- {k:'Crypto',re:/\b(bitcoin|crypto\w*|ethereum|blockchain|stablecoins?)\b/,
+ {k:'Crypto',s:'It is about cryptocurrencies like Bitcoin.',re:/\b(bitcoin|crypto\w*|ethereum|blockchain|stablecoins?)\b/,
   t:'Crypto prices swing much more than stocks. Big moves in Bitcoin often show how much risk investors are willing to take: when crypto rallies, risky tech stocks often rise too, and when it crashes, investors may pull back from risk in general. The simulator doesn’t include crypto, but tech can feel the effect.',
   w:[['QQQ','Risky tech stocks often move with crypto'],['TSLA','Has owned Bitcoin and is popular with risk-takers']]},
- {k:'Laws & regulators',re:/\b(antitrust|lawsuits?|sued|sues|court|judge|regulators?|fined|fines|probe|investigation|banned|monopoly|congress|senate|legislation)\b/,
+ {k:'Laws & regulators',s:'It is about laws, courts or government regulators.',re:/\b(antitrust|lawsuits?|sued|sues|court|judge|regulators?|fined|fines|probe|investigation|banned|monopoly|congress|senate|legislation)\b/,
   t:'When governments or courts go after a company, investors worry about fines, new rules or even the company being broken up. The stock often dips on the news, but the real impact depends on how big the penalty is compared with the size of the company.',w:[]},
- {k:'Housing',re:/\b(housing|home sales|mortgages?|home prices|homebuilders?|real estate|rents?|landlords?)\b/,
+ {k:'Housing',s:'It is about housing, mortgages and home prices.',re:/\b(housing|home sales|mortgages?|home prices|homebuilders?|real estate|rents?|landlords?)\b/,
   t:'Housing is closely tied to interest rates, because most homes are bought with a mortgage. When mortgage rates rise, fewer people buy homes, which hurts home builders, home improvement stores and real estate companies.',
   w:[['HD','Sells to homeowners and builders'],['XLRE','Holds real estate companies']]},
- {k:'Media & entertainment',re:/\b(disney|streaming|box office|movies?|films?|netflix|theme parks?|advertising|social media|tiktok)\b/,
+ {k:'Media & entertainment',s:'It is about media, streaming and entertainment.',re:/\b(disney|streaming|box office|movies?|films?|netflix|theme parks?|advertising|social media|tiktok)\b/,
   t:'Media companies earn money from subscriptions, ads, movies and theme parks. Subscriber numbers and ad spending are the big things investors watch, and both tend to fall when the economy slows.',
   w:[['DIS','Movies, streaming and theme parks'],['XLC','Holds media and communication companies'],['GOOG','Earns most of its money from ads']]},
- {k:'Banks & finance',re:/\b(banks?|banking|lenders?|jpmorgan|goldman|wall street|loans?|credit)\b/,
+ {k:'Banks & finance',s:'It is about banks and the financial system.',re:/\b(banks?|banking|lenders?|jpmorgan|goldman|wall street|loans?|credit)\b/,
   t:'Banks are the plumbing of the economy. Their profits depend on interest rates and on borrowers paying back loans. Trouble at a big bank can make the whole market nervous, while strong bank results suggest the economy is healthy.',
   w:[['XLF','Holds the biggest US banks and insurers']]}
 ];
@@ -968,14 +968,24 @@ function cleanSummary(n){var s=(n.summary||'').replace(/\s+/g,' ').trim();if(!s)
   var norm=function(x){return x.toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();};
   var h=norm((n.headline||'').replace(/\s+-\s+[^-]+$/,''));var sn=norm(s);
   if(h&&(sn===h||sn.indexOf(h)===0&&sn.length<h.length+40))return '';return s;}
+function cleanHead(n){var s=n.source||'';var h=(n.headline||'').trim();if(s&&h.slice(-(s.length+3))===' - '+s)h=h.slice(0,-(s.length+3));return h;}
+function headlineSummary(n,tops){
+  var src=n.source||'The publisher',hl=cleanHead(n).replace(/[.\s]+$/,'');
+  var out=src+' reports: '+hl+'.';
+  out+=' '+(tops[0]?tops[0].s:'It is a general news story rather than a business story, so its effect on the stock market is likely to be small.');
+  var names=(n.related||'').split(',').map(function(s){return s.trim().toUpperCase();}).filter(function(s){return A[s];}).map(function(s){return A[s].name;});
+  if(names.length)out+=' Companies in the story: '+names.join(', ')+'.';
+  if(n.datetime)out+=' The story broke '+ago(n.datetime*1000)+'.';
+  return out;}
 function openReader(n){
   var card=$('m-read').querySelector('.reader');
   $('r-src').textContent=n.source||'News';
   $('r-time').textContent=n.datetime?new Date(n.datetime*1000).toLocaleString([], {weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})+' · '+ago(n.datetime*1000):'';
-  $('r-title').textContent=n.headline;
+  $('r-title').textContent=cleanHead(n);
   var sum=cleanSummary(n);
-  $('r-sum').textContent=sum||'This publisher only shared the headline above. The full details are in the original story, and below we explain what news like this can mean for the market.';
-  var tops=newsTopics(n).slice(0,2),tb=$('r-topics'),ex=$('r-explain');tb.innerHTML='';ex.innerHTML='';
+  var tops=newsTopics(n).slice(0,2);
+  $('r-sum').textContent=sum||headlineSummary(n,tops);
+  var tb=$('r-topics'),ex=$('r-explain');tb.innerHTML='';ex.innerHTML='';
   if(!tops.length){tb.appendChild(el('span',null,'General news'));ex.appendChild(el('p',null,GENERAL));}
   tops.forEach(function(t,i){tb.appendChild(el('span',null,t.k));var p=el('p',null,t.t);if(i)p.style.marginTop='10px';ex.appendChild(p);});
   var m=newsMood(n),mood=$('r-mood');
@@ -1187,7 +1197,7 @@ function renderDetail(sym){
 }
 function feedItem(n,compact){
   var li=el('li'),meta=el('div','meta');meta.appendChild(el('span',null,n.source||'News'));if(n.datetime)meta.appendChild(el('span',null,ago(n.datetime*1000)));li.appendChild(meta);
-  var hd=el('div','hd'),a=el('a',null,n.headline);readLink(a,n);hd.appendChild(a);li.appendChild(hd);
+  var hd=el('div','hd'),a=el('a',null,cleanHead(n));readLink(a,n);hd.appendChild(a);li.appendChild(hd);
   if(!compact&&n.summary)li.appendChild(el('p','sum',n.summary.length>260?n.summary.slice(0,257).replace(/\s+\S*$/,'')+'…':n.summary));
   if(!compact&&n.related){var tags=el('div','tags');n.related.split(',').map(function(s){return s.trim().toUpperCase();}).filter(function(s){return A[s];}).slice(0,4).forEach(function(s){var b=el('button',null,s);b.type='button';b.addEventListener('click',function(){openDetail(s);});tags.appendChild(b);});if(tags.children.length)li.appendChild(tags);}
   return li;
