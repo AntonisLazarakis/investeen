@@ -11,6 +11,20 @@ const NAME = /^[A-Za-z0-9_.]{3,16}$/;
 const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/;
 const BLOCK = ['admin', 'investeen', 'moderator', 'official'];
 
+// Scores added by the site owner (played before the site went public).
+const PINNED = {
+  '2026-10': [{ name: 'Laz.trades', ret: 3.3636, worth: 436362.9, at: Date.UTC(2026, 9, 1), email: 'antonislazarakis11@icloud.com', age: '18+' }],
+};
+// Merge pinned scores in, keeping one best entry per email (same rule as normal entries).
+const withPinned = (m, list) => {
+  const out = list.slice();
+  for (const p of PINNED[m] || []) {
+    const i = out.findIndex((e) => e.email === p.email);
+    if (i < 0) out.push(p); else if (p.ret > out[i].ret) out[i] = { ...out[i], ...p };
+  }
+  return out;
+};
+
 const rank = (list) => list.slice().sort((a, b) => b.ret - a.ret || a.at - b.at);
 const pub = (list, n) => rank(list).slice(0, n).map((e, i) => ({ rank: i + 1, name: e.name, ret: e.ret, worth: e.worth, at: e.at }));
 
@@ -22,7 +36,8 @@ export default async (req) => {
     const cur = (await boards.get(month, { type: 'json' })) || { entries: [] };
     const pm = prevMonth(month);
     const prev = (await boards.get(pm, { type: 'json' })) || { entries: [] };
-    return json({ month, entries: pub(cur.entries, 50), players: cur.entries.length, prev: { month: pm, top: pub(prev.entries, 3) } }, 200, 'public, max-age=0, must-revalidate');
+    const all = withPinned(month, cur.entries), pall = withPinned(pm, prev.entries);
+    return json({ month, entries: pub(all, 50), players: all.length, prev: { month: pm, top: pub(pall, 3) } }, 200, 'public, max-age=0, must-revalidate');
   }
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
 
@@ -43,7 +58,7 @@ export default async (req) => {
 
   const board = (await boards.get(month, { type: 'json' })) || { entries: [] };
   const lname = name.toLowerCase();
-  if (board.entries.some((e) => e.name.toLowerCase() === lname && e.email !== email)) return json({ error: 'That username is taken this month. Try another one.' }, 409);
+  if (withPinned(month, board.entries).some((e) => e.name.toLowerCase() === lname && e.email !== email)) return json({ error: 'That username is taken this month. Try another one.' }, 409);
   if (board.entries.length >= 20000) return json({ error: 'The leaderboard is full this month.' }, 503);
 
   const entry = { name, email, age: b.age, parent: b.age === '15-17', ret: Math.round((g.finalWorth / START - 1) * 10000) / 10000, worth: g.finalWorth, at: Date.now(), id: g.id };
@@ -57,7 +72,7 @@ export default async (req) => {
   g.submitted = true; g.entryEmail = email;
   await games.setJSON(g.id, g);
 
-  const ranked = rank(board.entries);
+  const ranked = rank(withPinned(month, board.entries));
   const me = ranked.findIndex((e) => e.email === email);
   return json({ ok: true, kept, month, rank: me + 1, players: ranked.length, ret: entry.ret, best: ranked[me].ret });
 };
