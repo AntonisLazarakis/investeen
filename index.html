@@ -224,6 +224,7 @@ section[role="tabpanel"]{padding-bottom:40px}
 .lb-list .nm{font-weight:700;overflow-wrap:anywhere}
 .lb-list .rt{font-weight:800;min-width:64px;text-align:right}
 .lb-list .wv{color:var(--muted);font-size:14px;font-weight:700;text-align:right}
+@media (max-width:480px){.lb-list li{grid-template-columns:30px 1fr auto;row-gap:0}.lb-list .rk,.lb-list .nm{grid-row:1/3}.lb-list .rt{grid-column:3;grid-row:1}.lb-list .wv{grid-column:3;grid-row:2;font-size:13px}}
 .lb-form{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:14px}
 .lb-form input[type=text],.lb-form input[type=email]{width:100%;min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:0 14px;font:inherit;font-size:16px}
 .lb-form .chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
