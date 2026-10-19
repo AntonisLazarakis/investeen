@@ -411,7 +411,6 @@ footer strong{color:var(--ink)}
         <p class="lede">Real market news as it happens, advice you can actually use, and a simulator where you invest $100,000 of practice money at real, live prices.</p>
         <div class="ctas">
           <button class="btn btn-lime btn-big" type="button" data-go="simulator">Play the simulator</button>
-          <button class="btn btn-lime btn-big" type="button" data-go="leaderboard">See the leaderboard</button>
           <a class="btn btn-big" href="https://www.instagram.com/go.investeen/" target="_blank" rel="noopener">Follow on Instagram</a>
         </div>
       </div>
@@ -480,6 +479,17 @@ footer strong{color:var(--ink)}
         </article>
       </div>
       <p class="src">Live news isn't available here, so this is our summary of the week ending 9 October 2026. Source: <a href="https://www.lpl.com/research/blog/weekly-market-performance-october-9-2026.html" target="_blank" rel="noopener">LPL Research</a>.</p>
+    </div>
+  </div>
+
+  <div class="wrap block">
+    <div class="block-head">
+      <h2>Monthly leaderboard</h2>
+      <p>The top players in the 3-year simulator this month. The winner gets a prize.<span class="label" id="hb-sub" style="display:block;margin-top:10px"></span></p>
+    </div>
+    <div class="panel">
+      <div id="home-board"></div>
+      <p class="lb-note" style="margin-top:14px"><a href="#leaderboard" data-go="leaderboard">See the full leaderboard</a> · <a href="/rules.html">Contest rules</a></p>
     </div>
   </div>
 
@@ -1511,15 +1521,15 @@ $('lb-form').addEventListener('submit',function(){
 var BOARD=null,BOARD_AT=0;
 function loadBoard(){if(BOARD&&Date.now()-BOARD_AT<60000)return Promise.resolve(BOARD);return api('/leaderboard').then(function(j){BOARD=j;BOARD_AT=Date.now();return j;});}
 function monthName(m){return MON[+m.slice(5,7)-1]+' '+m.slice(0,4);}
-function renderBoard(box,sub){box.innerHTML='';box.appendChild(el('p','lb-note','Loading the leaderboard\u2026'));
+function renderBoard(box,sub,lim){box.innerHTML='';box.appendChild(el('p','lb-note','Loading the leaderboard\u2026'));
   loadBoard().then(function(j){box.innerHTML='';if(sub)sub.textContent=monthName(j.month)+' \u00b7 '+j.players+' player'+(j.players===1?'':'s');
     var me=null;try{me=(JSON.parse(localStorage.getItem('investeen-lb-me')||'null')||{}).name;}catch(e){}
     if(!j.entries.length)box.appendChild(el('p','lb-note','No one has entered yet this month. Finish a "Simulate the future" game and be the first!'));
-    else{var ul=el('ul','lb-list');j.entries.forEach(function(e){var li=el('li',me&&e.name.toLowerCase()===me.toLowerCase()?'me':'');li.appendChild(el('span','rk',String(e.rank)));li.appendChild(el('span','nm',e.name));li.appendChild(el('span','wv num',usd0.format(e.worth)));
+    else{var ul=el('ul','lb-list');j.entries.slice(0,lim||50).forEach(function(e){var li=el('li',me&&e.name.toLowerCase()===me.toLowerCase()?'me':'');li.appendChild(el('span','rk',String(e.rank)));li.appendChild(el('span','nm',e.name));li.appendChild(el('span','wv num',usd0.format(e.worth)));
       var rt=el('span','rt num',pct(e.ret,1));rt.style.color=e.ret>=0?'var(--gain)':'var(--loss)';li.appendChild(rt);ul.appendChild(li);});box.appendChild(ul);}
     if(j.prev&&j.prev.top&&j.prev.top.length){var pw=el('p','lb-note','Last month\u2019s winner ('+monthName(j.prev.month)+'): '+j.prev.top[0].name+' with '+usd0.format(j.prev.top[0].worth)+' ('+pct(j.prev.top[0].ret,1)+')');pw.style.marginTop='12px';box.appendChild(pw);}
   }).catch(function(){box.innerHTML='';box.appendChild(el('p','lb-note','The leaderboard shows up on your InvesTeen website.'));});}
-renderBoard($('setup-board'),$('sb-sub'));
+renderBoard($('setup-board'),$('sb-sub'));renderBoard($('home-board'),$('hb-sub'),5);
 
 $('e-again').addEventListener('click',function(){closeModal('m-end');S=null;try{localStorage.removeItem(KEY);}catch(e){}detailSym=null;view='portfolio';showGame();window.scrollTo(0,0);});
 
