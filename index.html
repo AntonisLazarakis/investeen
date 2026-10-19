@@ -83,7 +83,6 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var
 .tab[aria-selected="true"]{background:var(--ink);color:var(--paper)}
 .tab .dot{width:7px;height:7px;border-radius:50%;background:var(--lime)}
 @media (max-width:520px){.top{justify-content:center}.tab{padding:0 12px;font-size:14px}}
-@media (max-width:400px){.tab{padding:0 9px;font-size:13.5px;gap:4px}.tabs{gap:2px}}
 section[role="tabpanel"]{padding-bottom:40px}
 
 /* ---------- HOME ---------- */
@@ -394,7 +393,6 @@ footer strong{color:var(--ink)}
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button class="tab" role="tab" id="tab-home" aria-controls="home" data-go="home">Home</button>
       <button class="tab" role="tab" id="tab-simulator" aria-controls="simulator" data-go="simulator"><span class="dot" aria-hidden="true"></span>Simulator</button>
-      <button class="tab" role="tab" id="tab-leaderboard" aria-controls="leaderboard" data-go="leaderboard">Leaderboard</button>
       <button class="tab" role="tab" id="tab-learn" aria-controls="learn" data-go="learn">Learn</button>
     </nav>
   </div>
@@ -411,6 +409,7 @@ footer strong{color:var(--ink)}
         <p class="lede">Real market news as it happens, advice you can actually use, and a simulator where you invest $100,000 of practice money at real, live prices.</p>
         <div class="ctas">
           <button class="btn btn-lime btn-big" type="button" data-go="simulator">Play the simulator</button>
+          <button class="btn btn-big" type="button" data-go="leaderboard">🏆 See the leaderboard</button>
           <a class="btn btn-big" href="https://www.instagram.com/go.investeen/" target="_blank" rel="noopener">Follow on Instagram</a>
         </div>
       </div>
@@ -674,7 +673,7 @@ footer strong{color:var(--ink)}
 </section>
 
 <!-- ================= LEARN ================= -->
-<section id="leaderboard" role="tabpanel" aria-labelledby="tab-leaderboard" hidden>
+<section id="leaderboard" aria-label="Monthly leaderboard" hidden>
   <div class="wrap">
     <div class="learn-head">
       <p class="label">Monthly leaderboard</p>
@@ -833,7 +832,7 @@ function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cl
 var TABS=['home','simulator','leaderboard','learn'];
 function go(t,push){
   if(TABS.indexOf(t)<0)t='home';
-  TABS.forEach(function(x){$(x).hidden=x!==t;$('tab-'+x).setAttribute('aria-selected',String(x===t));$('tab-'+x).tabIndex=x===t?0:-1;});
+  TABS.forEach(function(x){$(x).hidden=x!==t;var tb=$('tab-'+x);if(tb){tb.setAttribute('aria-selected',String(x===t));tb.tabIndex=x===t?0:-1;}});
   if(t==='simulator')requestAnimationFrame(function(){if(S)setView(view);});
   if(t==='leaderboard')renderBoard($('page-board'),$('pb-sub'));
   if(push){try{history.replaceState(null,'','#'+t);}catch(e){}window.scrollTo(0,0);}
@@ -841,8 +840,8 @@ function go(t,push){
 document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)go(b.dataset.go,true);});
 document.querySelector('.tabs').addEventListener('keydown',function(e){
   if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
-  var i=TABS.indexOf(document.activeElement.dataset.go);if(i<0)return;
-  var n=TABS[(i+(e.key==='ArrowRight'?1:TABS.length-1))%TABS.length];go(n,true);$('tab-'+n).focus();e.preventDefault();
+  var NAV=['home','simulator','learn'],i=NAV.indexOf(document.activeElement.dataset.go);if(i<0)return;
+  var n=NAV[(i+(e.key==='ArrowRight'?1:2))%3];go(n,true);$('tab-'+n).focus();e.preventDefault();
 });
 
 /* ================= RULE OF 72 ================= */
