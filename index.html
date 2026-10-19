@@ -83,6 +83,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var
 .tab[aria-selected="true"]{background:var(--ink);color:var(--paper)}
 .tab .dot{width:7px;height:7px;border-radius:50%;background:var(--lime)}
 @media (max-width:520px){.top{justify-content:center}.tab{padding:0 12px;font-size:14px}}
+@media (max-width:400px){.tab{padding:0 9px;font-size:13.5px;gap:4px}.tabs{gap:2px}}
 section[role="tabpanel"]{padding-bottom:40px}
 
 /* ---------- HOME ---------- */
@@ -393,6 +394,7 @@ footer strong{color:var(--ink)}
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button class="tab" role="tab" id="tab-home" aria-controls="home" data-go="home">Home</button>
       <button class="tab" role="tab" id="tab-simulator" aria-controls="simulator" data-go="simulator"><span class="dot" aria-hidden="true"></span>Simulator</button>
+      <button class="tab" role="tab" id="tab-leaderboard" aria-controls="leaderboard" data-go="leaderboard">Leaderboard</button>
       <button class="tab" role="tab" id="tab-learn" aria-controls="learn" data-go="learn">Learn</button>
     </nav>
   </div>
@@ -672,6 +674,24 @@ footer strong{color:var(--ink)}
 </section>
 
 <!-- ================= LEARN ================= -->
+<section id="leaderboard" role="tabpanel" aria-labelledby="tab-leaderboard" hidden>
+  <div class="wrap">
+    <div class="learn-head">
+      <p class="label">Monthly leaderboard</p>
+      <h1 style="margin-top:12px">Who's the <span class="hl">top investor</span> this month?</h1>
+      <p>Players are ranked by how much their $100,000 grew after 3 simulated years. The top player each month wins a prize.</p>
+    </div>
+    <div class="panel" style="margin-top:24px">
+      <div class="panel-head"><h2>🏆 This month</h2><span class="label" id="pb-sub">Loading…</span></div>
+      <div id="page-board" style="margin-top:12px"></div>
+    </div>
+    <div class="ctas" style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-lime btn-big" type="button" data-go="simulator">Play to get on the board</button>
+      <a href="/rules.html">Contest rules</a>
+    </div>
+  </div>
+</section>
+
 <section id="learn" role="tabpanel" aria-labelledby="tab-learn" hidden>
   <div class="wrap">
     <div class="learn-head">
@@ -810,18 +830,19 @@ function $(id){return document.getElementById(id);}
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 
 /* ================= TABS ================= */
-var TABS=['home','simulator','learn'];
+var TABS=['home','simulator','leaderboard','learn'];
 function go(t,push){
   if(TABS.indexOf(t)<0)t='home';
   TABS.forEach(function(x){$(x).hidden=x!==t;$('tab-'+x).setAttribute('aria-selected',String(x===t));$('tab-'+x).tabIndex=x===t?0:-1;});
   if(t==='simulator')requestAnimationFrame(function(){if(S)setView(view);});
+  if(t==='leaderboard')renderBoard($('page-board'),$('pb-sub'));
   if(push){try{history.replaceState(null,'','#'+t);}catch(e){}window.scrollTo(0,0);}
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)go(b.dataset.go,true);});
 document.querySelector('.tabs').addEventListener('keydown',function(e){
   if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
   var i=TABS.indexOf(document.activeElement.dataset.go);if(i<0)return;
-  var n=TABS[(i+(e.key==='ArrowRight'?1:2))%3];go(n,true);$('tab-'+n).focus();e.preventDefault();
+  var n=TABS[(i+(e.key==='ArrowRight'?1:TABS.length-1))%TABS.length];go(n,true);$('tab-'+n).focus();e.preventDefault();
 });
 
 /* ================= RULE OF 72 ================= */
