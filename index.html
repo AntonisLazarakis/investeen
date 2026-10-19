@@ -217,12 +217,13 @@ section[role="tabpanel"]{padding-bottom:40px}
 .grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:960px){.grid2{grid-template-columns:minmax(0,1fr)}}
 .lb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.lb-list li{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--sunk);font-variant-numeric:tabular-nums}
+.lb-list li{display:grid;grid-template-columns:36px 1fr auto auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--sunk);font-variant-numeric:tabular-nums}
 .lb-list li.me{outline:2px solid var(--lime)}
 .lb-list .rk{font-weight:800;font-size:15px;text-align:center}
 .lb-list li:nth-child(1) .rk{background:var(--lime);color:var(--on-lime);border-radius:999px;padding:2px 0}
 .lb-list .nm{font-weight:700;overflow-wrap:anywhere}
-.lb-list .rt{font-weight:800}
+.lb-list .rt{font-weight:800;min-width:64px;text-align:right}
+.lb-list .wv{color:var(--muted);font-size:14px;font-weight:700;text-align:right}
 .lb-form{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:14px}
 .lb-form input[type=text],.lb-form input[type=email]{width:100%;min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:0 14px;font:inherit;font-size:16px}
 .lb-form .chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
@@ -1491,9 +1492,9 @@ function renderBoard(box,sub){box.innerHTML='';box.appendChild(el('p','lb-note',
   loadBoard().then(function(j){box.innerHTML='';if(sub)sub.textContent=monthName(j.month)+' \u00b7 '+j.players+' player'+(j.players===1?'':'s');
     var me=null;try{me=(JSON.parse(localStorage.getItem('investeen-lb-me')||'null')||{}).name;}catch(e){}
     if(!j.entries.length)box.appendChild(el('p','lb-note','No one has entered yet this month. Finish a "Simulate the future" game and be the first!'));
-    else{var ul=el('ul','lb-list');j.entries.forEach(function(e){var li=el('li',me&&e.name.toLowerCase()===me.toLowerCase()?'me':'');li.appendChild(el('span','rk',String(e.rank)));li.appendChild(el('span','nm',e.name));
+    else{var ul=el('ul','lb-list');j.entries.forEach(function(e){var li=el('li',me&&e.name.toLowerCase()===me.toLowerCase()?'me':'');li.appendChild(el('span','rk',String(e.rank)));li.appendChild(el('span','nm',e.name));li.appendChild(el('span','wv num',usd0.format(e.worth)));
       var rt=el('span','rt num',pct(e.ret,1));rt.style.color=e.ret>=0?'var(--gain)':'var(--loss)';li.appendChild(rt);ul.appendChild(li);});box.appendChild(ul);}
-    if(j.prev&&j.prev.top&&j.prev.top.length){var pw=el('p','lb-note','Last month\u2019s winner ('+monthName(j.prev.month)+'): '+j.prev.top[0].name+' with '+pct(j.prev.top[0].ret,1));pw.style.marginTop='12px';box.appendChild(pw);}
+    if(j.prev&&j.prev.top&&j.prev.top.length){var pw=el('p','lb-note','Last month\u2019s winner ('+monthName(j.prev.month)+'): '+j.prev.top[0].name+' with '+usd0.format(j.prev.top[0].worth)+' ('+pct(j.prev.top[0].ret,1)+')');pw.style.marginTop='12px';box.appendChild(pw);}
   }).catch(function(){box.innerHTML='';box.appendChild(el('p','lb-note','The leaderboard shows up on your InvesTeen website.'));});}
 renderBoard($('setup-board'),$('sb-sub'));
 
