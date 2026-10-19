@@ -1554,7 +1554,9 @@ try{window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',
 new MutationObserver(function(){if(S&&view==='portfolio')renderPortfolio();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
 S=load();showGame();renderTape();
-var hh=(location.hash||'').replace('#','');go(TABS.indexOf(hh)>-1?hh:'home',false);
+var hh=(location.hash||'').replace('#','');
+if(/^me=[A-Za-z0-9_.]{3,16}$/.test(hh)){try{localStorage.setItem('investeen-lb-me',JSON.stringify({name:hh.slice(3)}));}catch(e){}hh='leaderboard';try{history.replaceState(null,'','#leaderboard');}catch(e){}}
+go(TABS.indexOf(hh)>-1?hh:'home',false);
 refreshQuotes();refreshNews();
 })();
 </script>
