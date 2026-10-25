@@ -16,8 +16,13 @@ const PINNED = {
   '2026-10': [{ name: 'Laz.trades', ret: 3.3636, worth: 436362.9, at: Date.UTC(2026, 9, 1), email: 'antonislazarakis11@icloud.com', age: '18+' }],
 };
 // Merge pinned scores in, keeping one best entry per email (same rule as normal entries).
+// Entries the site owner removed (their own extra entries). Matched on exact name + score.
+const HIDDEN = {
+  '2026-10': [{ name: 'Laz.trades.', ret: 0.9945 }, { name: 'Laz', ret: 0.1114 }],
+};
+const visible = (m, list) => list.filter((e) => !(HIDDEN[m] || []).some((h) => h.name === e.name && h.ret === e.ret));
 const withPinned = (m, list) => {
-  const out = list.slice();
+  const out = visible(m, list);
   for (const p of PINNED[m] || []) {
     const i = out.findIndex((e) => e.email === p.email);
     if (i < 0) out.push(p); else if (p.ret > out[i].ret) out[i] = { ...out[i], ...p };
