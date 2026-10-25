@@ -37,6 +37,11 @@ tr:first-child td{font-weight:700}
   </div>
   <p id="msg" role="status"></p>
   <div class="tbl"><table><thead><tr><th>#</th><th>Username</th><th>Email</th><th>Age</th><th>Return</th><th>Final worth</th><th>Entered</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+
+  <h2 style="font-size:22px;margin:36px 0 4px">Finished games that were never entered</h2>
+  <p class="muted">If a player finished a 3-year game but restarted before entering it, the game is still saved here with its real score. Only games recorded by the server show up.</p>
+  <div class="row"><button id="findg" class="ghost">Find games</button><span id="gmsg" class="muted"></span></div>
+  <div class="tbl"><table><thead><tr><th>Finished</th><th>Return</th><th>Final worth</th><th>Game id</th><th></th></tr></thead><tbody id="grows"></tbody></table></div>
 </div>
 <script>
 var data=null,$=function(id){return document.getElementById(id);};
@@ -52,6 +57,19 @@ function show(j){data=j;var sel=$('month');sel.innerHTML='';(j.months.length?j.m
   $('msg').textContent=j.month?j.entries.length+' entries in '+j.month+'.':'No entries yet.';$('csv').disabled=!j.entries.length;}
 function load(m){$('msg').textContent='Loading…';call('GET',m?'?month='+encodeURIComponent(m):'').then(show).catch(function(e){$('msg').textContent=e.message;});}
 $('load').onclick=function(){load($('month').value);};
+function findGames(){$('gmsg').textContent='Searching…';call('GET','?games=1').then(function(j){var tb=$('grows');tb.innerHTML='';
+  j.games.forEach(function(g){var tr=document.createElement('tr');
+    [g.finishedAt?new Date(g.finishedAt).toLocaleString():'?',(g.ret>=0?'+':'')+(g.ret*100).toFixed(1)+'%','$'+g.finalWorth.toLocaleString('en-US'),g.id.slice(0,8)+'…'].forEach(function(v){var td=document.createElement('td');td.textContent=v;tr.appendChild(td);});
+    var td=document.createElement('td'),b=document.createElement('button');b.textContent='Enter';b.onclick=function(){
+      var name=prompt('Username for this score (3–16 letters, numbers, dots or underscores):');if(!name)return;
+      var email=prompt('Email for this entry (one spot per email):');if(!email)return;
+      b.disabled=true;fetch('/api/admin',{method:'POST',headers:{'x-admin-key':$('key').value.trim(),'Content-Type':'application/json'},body:JSON.stringify({id:g.id,name:name,email:email})})
+        .then(function(r){return r.json().then(function(x){if(!r.ok)throw new Error(x.error||r.status);return x;});})
+        .then(function(x){$('gmsg').textContent=x.kept?'Kept the earlier, better score for that email.':'Entered: rank #'+x.rank+' of '+x.players+'.';findGames();load();})
+        .catch(function(e){b.disabled=false;$('gmsg').textContent=e.message;});};
+    td.appendChild(b);tr.appendChild(td);tb.appendChild(tr);});
+  $('gmsg').textContent=j.games.length?j.games.length+' finished game(s) not entered.':'No finished, unentered games found.';}).catch(function(e){$('gmsg').textContent=e.message;});}
+$('findg').onclick=findGames;
 $('csv').onclick=function(){if(!data)return;var rows=[['rank','username','email','age','return','final_worth','entered']].concat(data.entries.map(function(e){return [e.rank,e.name,e.email,e.age,e.ret,e.worth,new Date(e.at).toISOString()];}));
   var csv=rows.map(function(r){return r.map(function(v){v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');}).join('\n');
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='investeen-leaderboard-'+data.month+'.csv';a.click();};
