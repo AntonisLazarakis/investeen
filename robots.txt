@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin.html
+Disallow: /demo.html
 
 Sitemap: https://goinvesteen.com/sitemap.xml
