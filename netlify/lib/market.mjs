@@ -84,7 +84,7 @@ var CO_EV=[
 ];
 function shockFor(o,ev,m){var s=0;
   if(ev.mkt)s+=ev.mkt*m*(o.cls==='bond'?.05:o.cls==='stock'?1.1:1);
-  if(ev.r){var r=ev.r*m;if(o.cls==='bond')s-=DUR[o.sym]*r;if(o.sym==='XLRE')s-=4*r;if(o.sk==='fin')s+=1.5*r;}
+  if(ev.r){var r=ev.r*m;if(o.cls==='bond')s-=(DUR[o.sym]||o.dur||6)*r;if(o.sym==='XLRE')s-=4*r;if(o.sk==='fin')s+=1.5*r;}
   if(ev.sec&&o.sk&&ev.sec[o.sk]!=null)s+=ev.sec[o.sk]*m*(o.cls==='stock'?1.1:o.cls==='index'?.55:1);
   if(ev.tick){for(var k in ev.tick){var x=ev.tick[k]*m;if(k===o.sym)s+=x;else if(o.cls==='sector'&&A[k].sk===o.sk)s+=x*.08;else if(o.cls==='index')s+=x*(o.sym==='QQQ'&&A[k].sk==='tech'?.06:.02);}}
   return s;}
@@ -102,15 +102,39 @@ function makeEvents(){
   days.sort(function(a,b){return a-b;});evs.forEach(function(e,i){e.dd=days[i];});return evs;}
 
 // Simulate one quarter starting from `last` prices. Returns daily price paths (QD days) and news events.
-export function simQuarter(seed, q, last){
+// Extra investments (any US stock or fund a player adds). Their own random noise comes from a separate
+// stream per symbol, so adding them never changes the 32 starter investments or the news.
+function hashStr(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function gx(r){var u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+export function extraAsset(m){
+  var cls=m.cls==='bond'?'bond':m.cls==='fund'?'fund':'stock',o={cls:cls,sym:m.sym,name:m.name,sec:m.sec||'',sk:m.sk||'',yld:Math.min(.12,Math.max(0,+m.yld||0))};
+  o.sig=Math.min(cls==='stock'?.8:.6,Math.max(cls==='bond'?.03:.1,+m.sig||(cls==='bond'?.07:cls==='fund'?.2:.35)));
+  if(cls==='bond'){o.a=.1;o.b=.85;o.dur=/long|20\+|25\+/i.test(o.name)?15:/short|0-|1-3|t-bill/i.test(o.name)?2:6;}
+  else if(cls==='fund'){o.a=.85;o.b=o.sk?.3:0;}else{o.a=.55;o.b=o.sk?.35:0;}
+  o.c=Math.sqrt(Math.max(0,1-o.a*o.a-o.b*o.b));o.mu=cls==='bond'?.045:.085;return o;}
+var BASE={};RAW.forEach(function(r){BASE[r[1]]=r[3];});
+// Price path of an extra investment from the start of the game up to the start of quarter q.
+export function extraHistory(seed, q, o, p0){
+  var path=[p0],last=Object.assign({},BASE),ex={};ex[o.sym]=o;last[o.sym]=p0;
+  for(var k=0;k<q;k++){var r=simQuarter(seed,k,last,ex);path=path.concat(r.paths[o.sym]);last[o.sym]=r.last[o.sym];}
+  return path;}
+export function simQuarter(seed, q, last, ex){
   rng = mulberry32((seed ^ Math.imul(q + 1, 0x9E3779B1)) >>> 0);
   var evs = makeEvents(), SK = Object.keys(SECKEY).map(function(k){return SECKEY[k];}), cur = {}, paths = {};
   LIST.forEach(function(o){cur[o.sym] = last[o.sym]; paths[o.sym] = [];});
+  var XL = Object.keys(ex || {}).sort().map(function(k){return ex[k];}), xr = {};
+  XL.forEach(function(o){cur[o.sym] = last[o.sym]; paths[o.sym] = []; xr[o.sym] = mulberry32((hashStr(o.sym) ^ seed ^ Math.imul(q + 7, 0x85EBCA6B)) >>> 0);});
   for (var i = 1; i <= QD; i++){
     var zm = gauss(), zr = gauss(), zs = {}; SK.forEach(function(k){zs[k] = gauss();});
     var td = evs.filter(function(e){return e.dd === i;});
     LIST.forEach(function(o){
       var f = o.cls === 'bond' ? -zr : (o.sk ? zs[o.sk] : 0), z = o.a*zm + o.b*f + o.c*gauss();
+      var p = cur[o.sym]*Math.exp((o.mu - o.yld - o.sig*o.sig/2)/252 + o.sig/Math.sqrt(252)*z);
+      td.forEach(function(e){p *= 1 + shockFor(o, e, e.m);});
+      p = Math.max(.5, Math.round(p*100)/100); cur[o.sym] = p; paths[o.sym].push(p);
+    });
+    XL.forEach(function(o){
+      var f = o.cls === 'bond' ? -zr : (o.sk ? zs[o.sk] : 0), z = o.a*zm + o.b*f + o.c*gx(xr[o.sym]);
       var p = cur[o.sym]*Math.exp((o.mu - o.yld - o.sig*o.sig/2)/252 + o.sig/Math.sqrt(252)*z);
       td.forEach(function(e){p *= 1 + shockFor(o, e, e.m);});
       p = Math.max(.5, Math.round(p*100)/100); cur[o.sym] = p; paths[o.sym].push(p);
@@ -121,14 +145,15 @@ export function simQuarter(seed, q, last){
 }
 // Apply a list of trades at the given prices. Mirrors the browser's rounding exactly.
 export function applyTrades(state, trades, prices){
+  var ex = state.ex || {};
   if (!Array.isArray(trades) || trades.length > 500) throw new Error('Too many trades');
   trades.forEach(function(t){
     var s = t && t.s, n = t && t.n, p = prices[s];
-    if (!A[s] || !Number.isInteger(n) || n <= 0 || n > 1e8 || (t.side !== 'buy' && t.side !== 'sell')) throw new Error('Invalid trade');
+    if (!(A[s] || ex[s]) || !(p > 0) || !Number.isInteger(n) || n <= 0 || n > 1e8 || (t.side !== 'buy' && t.side !== 'sell')) throw new Error('Invalid trade');
     var have = state.hold[s] || 0;
     if (t.side === 'buy'){ if (n*p > state.cash + 1e-9) throw new Error('Not enough cash for ' + s); state.hold[s] = have + n; state.cash = Math.round((state.cash - n*p)*100)/100; }
     else { if (n > have) throw new Error('Not enough shares of ' + s); state.hold[s] = have - n; if (!state.hold[s]) delete state.hold[s]; state.cash = Math.round((state.cash + n*p)*100)/100; }
   });
 }
-export function dividends(hold, prices){var d=0;Object.keys(hold).sort().forEach(function(k){d+=hold[k]*prices[k]*A[k].yld/4;});return Math.round(d*100)/100;}
+export function dividends(hold, prices, ex){var d=0;Object.keys(hold).sort().forEach(function(k){var y=A[k]?A[k].yld:ex&&ex[k]?extraAsset(ex[k]).yld:0;d+=hold[k]*prices[k]*y/4;});return Math.round(d*100)/100;}
 export function worthOf(state, prices){var w=state.cash;Object.keys(state.hold).forEach(function(k){w+=state.hold[k]*prices[k];});return Math.round(w*100)/100;}
