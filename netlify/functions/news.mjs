@@ -14,7 +14,7 @@ export default async (req) => {
   const symbol = (new URL(req.url).searchParams.get('symbol') || '').toUpperCase();
   let api;
   if (symbol) {
-    if (!ALLOWED.has(symbol)) return Response.json({ error: 'Unknown symbol' }, { status: 400 });
+    if (!ALLOWED.has(symbol) && !/^[A-Z]{1,5}(\.[A-Z]{1,2})?$/.test(symbol)) return Response.json({ error: 'Unknown symbol' }, { status: 400 });
     const day = (d) => d.toISOString().slice(0, 10);
     const to = new Date();
     const from = new Date(Date.now() - 7 * 864e5);
