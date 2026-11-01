@@ -315,7 +315,7 @@ td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right;font-va
 tr:last-child td{border-bottom:0}
 td .tk{display:flex;align-items:center;gap:10px;font-weight:700}
 .tk-badge{min-width:52px;height:30px;padding:0 6px;border-radius:8px;display:inline-grid;place-items:center;font-family:var(--display);font-weight:800;font-size:12px;color:#fff}
-.k-index,.k-sector{background:#2F6FE4} .k-bond{background:#E39A1C;color:#2A1A00} .k-stock{background:#8250E8}
+.k-index,.k-sector,.k-fund{background:#2F6FE4} .k-bond{background:#E39A1C;color:#2A1A00} .k-stock{background:#8250E8}
 .linkbtn{background:none;border:0;padding:0;font-weight:700;color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-align:left}
 .empty{color:var(--muted);font-size:15px;padding:12px 0}
 .tip{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;background:var(--navy);color:var(--on-navy);border-radius:var(--r-lg);padding:18px 20px;margin-top:16px}
@@ -337,7 +337,7 @@ td .tk{display:flex;align-items:center;gap:10px;font-weight:700}
 .acard .p{font-weight:700}
 .acard .c{font-size:13px;font-weight:700}
 .acard .own{position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--lime);color:var(--on-lime);padding:2px 7px;border-radius:999px}
-.acard.k-index-b,.acard.k-sector-b{border-top:4px solid var(--c-funds)} .acard.k-bond-b{border-top:4px solid var(--c-bonds)} .acard.k-stock-b{border-top:4px solid var(--c-stocks)}
+.acard.k-index-b,.acard.k-sector-b,.acard.k-fund-b{border-top:4px solid var(--c-funds)} .acard.k-bond-b{border-top:4px solid var(--c-bonds)} .acard.k-stock-b{border-top:4px solid var(--c-stocks)}
 .detail-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}
 .detail-top h2{font-size:clamp(26px,3.4vw,36px)}
 .detail-top .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
@@ -494,7 +494,7 @@ footer strong{color:var(--ink)}
         <span class="tag">Simulator</span>
         <h2>$100,000. Real prices. Your call.</h2>
         <p>Buy and sell real funds, bonds and stocks at live market prices. Your portfolio moves with the real market, every minute it's open.</p>
-        <ul aria-label="Game features"><li>Live prices</li><li>32 real investments</li><li>Real news</li><li>No stock limits</li></ul>
+        <ul aria-label="Game features"><li>Live prices</li><li>Every US stock &amp; fund</li><li>Real news</li><li>No stock limits</li></ul>
         <button class="btn btn-lime" type="button" data-go="simulator" style="align-self:flex-start">Start investing</button>
       </div>
     </div>
@@ -626,7 +626,7 @@ footer strong{color:var(--ink)}
     <p class="label">InvesTeen Simulator</p>
     <h1 style="margin-top:10px">Invest <span class="hl">$100,000</span> in the real market</h1>
     <p class="lede">Practice money, real prices. Play the live market, where your portfolio moves with the real stock market, or fast-forward three years from today's prices and see one possible future.</p>
-    <ul class="facts"><li>$100,000 practice cash</li><li>Live prices, updated every minute</li><li>32 real investments</li><li>Buy as many stocks as you want</li></ul>
+    <ul class="facts"><li>$100,000 practice cash</li><li>Live prices, updated every minute</li><li>Every US stock &amp; fund</li><li>Buy as many stocks as you want</li></ul>
     <form id="level-form" onsubmit="return false">
       <fieldset style="border:0;padding:0;margin:0">
         <legend class="label" style="margin-top:32px">Choose a mode</legend>
@@ -718,7 +718,7 @@ footer strong{color:var(--ink)}
         <div id="trade-list">
           <div class="searchrow">
             <label for="q" class="label" style="position:absolute;left:-9999px">Search investments</label>
-            <input id="q" type="search" placeholder="Search: Apple, NVDA, bonds…" autocomplete="off">
+            <input id="q" type="search" placeholder="Search any US stock or fund: Costco, NVDA, bonds…" autocomplete="off">
           </div>
           <div id="trade-sections"></div>
         </div>
@@ -988,8 +988,8 @@ document.querySelector('.tabs').addEventListener('keydown',function(e){
 
 /* ================= ASSETS ================= */
 var START=100000, KEY='investeen-live-v1';
-var CLS={index:'Index funds',sector:'Sector ETFs',bond:'Bonds',stock:'Stocks'};
-var CLS1={index:'Index fund',sector:'Sector ETF',bond:'Bond fund',stock:'Stock'};
+var CLS={index:'Index funds',sector:'Sector ETFs',bond:'Bonds',stock:'Stocks',fund:'Funds (ETFs)'};
+var CLS1={index:'Index fund',sector:'Sector ETF',bond:'Bond fund',stock:'Stock',fund:'Fund (ETF)'};
 var CLS_ABOUT={index:'Track a whole market by holding hundreds of companies at once.',sector:'Focus on one part of the economy.',bond:'Loans to governments or companies that pay interest. Calmer than stocks.',stock:'Shares of a single company. Bigger swings, bigger risk.'};
 // [class, symbol, name, fallback price (close 16 Oct 2026), sector, approx dividend rate, about]
 var RAW=[
@@ -1080,7 +1080,8 @@ async function refreshQuotes(){
   try{
     var r=await fetch(API+'/quotes',{cache:'no-store'});if(!r.ok)throw new Error(r.status);
     var j=await r.json();if(!j||!j.quotes||!Object.keys(j.quotes).length)throw new Error('empty');
-    LIVE.q=j.quotes;LIVE.updated=j.updated||Date.now();LIVE.ok=true;
+    var keep={};for(var k in LIVE.q)if(A[k]&&A[k].extra)keep[k]=LIVE.q[k];LIVE.q=Object.assign(j.quotes,keep);LIVE.updated=j.updated||Date.now();LIVE.ok=true;
+    if(S&&!isF()&&S.ex)await refreshExtras();
   }catch(e){if(LIVE.ok!==true)LIVE.ok=false;}
   onPrices();
 }
@@ -1389,7 +1390,7 @@ function renderTradeList(){
       b.setAttribute('aria-label',o.name+', '+usd.format(px(o.sym)));b.addEventListener('click',function(){openDetail(o.sym);});g.appendChild(b);});
     sec.appendChild(g);box.appendChild(sec);
   });
-  if(!any)box.appendChild(el('p','empty','Nothing matches “'+$('q').value+'”. Try a company name or ticker.'));
+  renderMarketSection(box,q);
 }
 function openDetail(sym){detailSym=sym;if(view!=='trade')setView('trade');else renderDetail(sym);var g=$('game');if(g&&!g.hidden)window.scrollTo({top:Math.max(0,g.offsetTop-70)});}
 function renderDetail(sym){
@@ -1536,7 +1537,7 @@ var CO_EV=[
 ];
 function shockFor(o,ev,m){var s=0;
   if(ev.mkt)s+=ev.mkt*m*(o.cls==='bond'?.05:o.cls==='stock'?1.1:1);
-  if(ev.r){var r=ev.r*m;if(o.cls==='bond')s-=DUR[o.sym]*r;if(o.sym==='XLRE')s-=4*r;if(o.sk==='fin')s+=1.5*r;}
+  if(ev.r){var r=ev.r*m;if(o.cls==='bond')s-=(DUR[o.sym]||o.dur||6)*r;if(o.sym==='XLRE')s-=4*r;if(o.sk==='fin')s+=1.5*r;}
   if(ev.sec&&o.sk&&ev.sec[o.sk]!=null)s+=ev.sec[o.sk]*m*(o.cls==='stock'?1.1:o.cls==='index'?.55:1);
   if(ev.tick){for(var k in ev.tick){var x=ev.tick[k]*m;if(k===o.sym)s+=x;else if(o.cls==='sector'&&A[k].sk===o.sk)s+=x*.08;else if(o.cls==='index')s+=x*(o.sym==='QQQ'&&A[k].sk==='tech'?.06:.02);}}
   return s;}
@@ -1557,7 +1558,7 @@ function simQuarter(){
   LIST.forEach(function(o){p0[o.sym]=px(o.sym);});
   for(var i=1;i<=QD;i++){var zm=gauss(),zr=gauss(),zs={};SK.forEach(function(k){zs[k]=gauss();});
     var td=evs.filter(function(e){return e.dd===i;});
-    LIST.forEach(function(o){var f=o.cls==='bond'?-zr:(o.sk?zs[o.sk]:0),z=o.a*zm+o.b*f+o.c*gauss();
+    LIST.concat(exList().filter(function(o){return S.P[o.sym];})).forEach(function(o){var f=o.cls==='bond'?-zr:(o.sk?zs[o.sk]:0),z=o.a*zm+o.b*f+o.c*gauss();
       var p=px(o.sym)*Math.exp((o.mu-o.yld-o.sig*o.sig/2)/252+o.sig/Math.sqrt(252)*z);
       td.forEach(function(e){p*=1+shockFor(o,e,e.m);});S.P[o.sym].push(Math.max(.5,Math.round(p*100)/100));});
     S.worth.push(worth());}
@@ -1584,7 +1585,7 @@ function drawLine(c,data,o){
   ctx.beginPath();ctx.arc(X(n-1),Y(data[n-1]),5.5,0,7);ctx.fillStyle='#C6F432';ctx.fill();ctx.lineWidth=2.5;ctx.strokeStyle=ink;ctx.stroke();}
 function applyQuarter(r){
   var q=S.q,d0=q*QD,w0=worth(),spy0=px('SPY'),p0={};LIST.forEach(function(o){p0[o.sym]=px(o.sym);});
-  for(var i=0;i<QD;i++){LIST.forEach(function(o){S.P[o.sym].push(r.paths[o.sym][i]);});S.worth.push(worth());}
+  var XS=Object.keys(S.ex||{}).filter(function(k){return S.P[k]&&r.paths[k];});for(var i=0;i<QD;i++){LIST.forEach(function(o){S.P[o.sym].push(r.paths[o.sym][i]);});XS.forEach(function(k){S.P[k].push(r.paths[k][i]);});S.worth.push(worth());}
   S.cash=r.cash;S.div=Math.round((S.div+r.div)*100)/100;S.worth[S.worth.length-1]=worth();
   r.news.forEach(function(e){var d=d0+e.dd;S.news.push({q:q,d:d,kind:e.kind,t:e.t,why:e.why,fx:e.tags.map(function(s){return {s:s,r:S.P[s][d]/S.P[s][d-1]-1};})});});
   S.q++;S.pend=[];var best=null,worst=null;LIST.forEach(function(o){var g=px(o.sym)/p0[o.sym]-1;if(!best||g>best.g)best={s:o.sym,g:g};if(!worst||g<worst.g)worst={s:o.sym,g:g};});
@@ -1881,7 +1882,55 @@ $('ls-check').addEventListener('click',function(){if(CUR==null)return;var L=LESS
   if(sc===3)award('perfect');if(LESSONS.every(function(x){return d[x.id];}))award('scholar');renderLessons();renderBadges($('l-badges'),$('lbd-sub'));});
 $('ls-sim').addEventListener('click',function(){closeModal('m-lesson');go('simulator',true);});
 
-S=load();showGame();renderTape();
+/* ================= WHOLE MARKET ================= */
+// Any US stock or fund beyond the 32 starters. Details come from /api/asset (live game) or /api/game/add (future game).
+var SYMS=null,SYMS_P=null;
+function loadSymbols(){if(SYMS)return Promise.resolve(SYMS);if(SYMS_P)return SYMS_P;
+  SYMS_P=fetch(API+'/symbols').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){SYMS=(j.list||[]).filter(function(x){return !A[x[0]]||A[x[0]].extra;});if(j.complete===false)setTimeout(function(){SYMS=null;SYMS_P=null;},30000);return SYMS;}).catch(function(){SYMS_P=null;return null;});return SYMS_P;}
+function exObj(m){var cls=m.cls==='bond'?'bond':m.cls==='fund'?'fund':'stock',o={extra:true,cls:cls,sym:m.sym,name:m.name,sec:m.sec||'',sk:m.sk||'',yld:+m.yld||0,about:m.about||'',p0:m.p||0};
+  o.sig=Math.min(cls==='stock'?.8:.6,Math.max(cls==='bond'?.03:.1,+m.sig||(cls==='bond'?.07:cls==='fund'?.2:.35)));
+  if(cls==='bond'){o.a=.1;o.b=.85;o.dur=/long|20\+|25\+/i.test(o.name)?15:/short|0-|1-3|t-bill/i.test(o.name)?2:6;o.sig=o.dur>10?.14:o.dur<3?.03:.06;}else if(cls==='fund'){o.a=.85;o.b=o.sk?.3:0;}else{o.a=.55;o.b=o.sk?.35:0;}
+  o.c=Math.sqrt(Math.max(0,1-o.a*o.a-o.b*o.b));o.mu=cls==='bond'?.045:.085;return o;}
+function addAsset(m){if(A[m.sym]&&!A[m.sym].extra)return A[m.sym];var o=exObj(m);if(A[m.sym]&&A[m.sym].p0&&!o.p0)o.p0=A[m.sym].p0;A[m.sym]=o;return o;}
+function exList(){return S&&S.ex?Object.keys(S.ex).sort().map(function(k){return A[k];}).filter(Boolean):[];}
+function restoreEx(){if(!S||!S.ex)return;for(var k in S.ex)addAsset(S.ex[k]);}
+function searchMarket(q){if(!SYMS||!q)return [];var Q=q.toUpperCase(),lq=q.toLowerCase(),a=[],b=[],c=[];
+  for(var i=0;i<SYMS.length;i++){var x=SYMS[i];if(x[0]===Q)a.push(x);else if(x[0].indexOf(Q)===0)b.push(x);else if(lq.length>1&&x[1].toLowerCase().indexOf(lq)>-1)c.push(x);if(a.length+b.length>40)break;}
+  c.sort(function(x,y){var px=x[1].toLowerCase().indexOf(lq)===0?0:1,py=y[1].toLowerCase().indexOf(lq)===0?0:1;return px-py||(x[2]===y[2]?0:x[2]==='s'?-1:1)||x[0].length-y[0].length;});
+  b.sort(function(x,y){return x[0].length-y[0].length;});return a.concat(b).concat(c).slice(0,24);}
+var picking=null;
+function pickMarket(sym){if(picking)return;
+  if(A[sym]&&!A[sym].extra){openDetail(sym);return;}
+  if(S.ex&&S.ex[sym]&&(isF()?S.P[sym]:true)){openDetail(sym);if(!isF())refreshExtras([sym]);return;}
+  if(isF()&&!S.srv){flash('This game is offline, so it only has the 32 starter investments.');return;}
+  if(isF()&&S.q>=NQ){flash('This game is finished. Start a new one to add '+sym+'.');return;}
+  picking=sym;flash('Loading '+sym+'…');
+  var p=isF()?api('/game/add',{id:S.srv,s:sym}).then(function(r){if(r.core){picking=null;openDetail(sym);return;}
+      var m=r.asset;m.p=r.path[r.path.length-1];addAsset(m);S.ex=S.ex||{};S.ex[sym]=m;S.P[sym]=r.path;save();openDetail(sym);})
+    :api('/asset?s='+encodeURIComponent(sym)).then(function(r){var m=r.asset;m.p=r.quote.c;addAsset(m);LIVE.q[sym]=r.quote;S.ex=S.ex||{};S.ex[sym]=m;save();openDetail(sym);});
+  p.then(function(){var f=$('flash');if(f&&picking)f.hidden=true;}).catch(function(e){flash(e.message||('Couldn’t load '+sym+'. Try again.'));}).then(function(){picking=null;});}
+function refreshExtras(only){if(!S||isF()||!S.ex)return Promise.resolve();
+  var syms=(only||Object.keys(S.ex)).filter(function(k){return S.ex[k];}).slice(0,40);
+  return Promise.all(syms.map(function(k){return fetch(API+'/asset?s='+encodeURIComponent(k)).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.quote){LIVE.q[k]=j.quote;S.ex[k].p=j.quote.c;A[k].p0=j.quote.c;}}).catch(function(){});})).then(function(){save();});}
+function marketCard(sym,name,type,box){var known=A[sym],b=el('button','acard k-'+(known?known.cls:type==='e'?'fund':'stock')+'-b');b.type='button';
+  b.appendChild(el('span','s',sym));b.appendChild(el('span','n',known?known.name:name));var row=el('span','row');
+  if(known&&(isF()?S.P[sym]:LIVE.q[sym]||known.p0)){row.appendChild(el('span','p num',usd.format(px(sym))));var ch=dayChg(sym);row.appendChild(el('span','c num '+(ch==null?'':ch>=0?'up':'down'),ch==null?'':(ch>=0?'▲ ':'▼ ')+Math.abs(ch*100).toFixed(2)+'%'));}
+  else row.appendChild(el('span','c',type==='e'?'Fund · tap to see price':'Stock · tap to see price'));
+  b.appendChild(row);if(S.hold[sym]&&S.hold[sym].qty)b.appendChild(el('span','own','Owned'));
+  b.addEventListener('click',function(){pickMarket(sym);});box.appendChild(b);}
+function renderMarketSection(box,q){
+  var ex=exList().filter(function(o){return !q||(o.sym+' '+o.name).toLowerCase().indexOf(q)>-1;});
+  if(ex.length){var s1=el('div','asset-sec'),h1=el('h2'),i1=el('i');i1.style.background='var(--c-stocks)';h1.appendChild(i1);h1.appendChild(document.createTextNode('Your picks from the market'));s1.appendChild(h1);
+    var g1=el('div','cards');ex.forEach(function(o){marketCard(o.sym,o.name,o.cls==='stock'?'s':'e',g1);});s1.appendChild(g1);box.insertBefore(s1,box.firstChild);}
+  var sec=el('div','asset-sec mkt'),h=el('h2'),i=el('i');i.style.background='var(--ink)';h.appendChild(i);h.appendChild(document.createTextNode('Whole US market'));
+  h.appendChild(el('small',null,SYMS?SYMS.length.toLocaleString('en-US')+' more stocks and funds':'Every stock and fund on the US market'));sec.appendChild(h);
+  if(isF()&&!S.srv){sec.appendChild(el('p','empty','This game is offline, so it only has the 32 starter investments above.'));box.appendChild(sec);return;}
+  if(!q){sec.appendChild(el('p','empty','Looking for something else? Type any company or ticker in the search box, like Costco, Netflix or AMD.'));box.appendChild(sec);return;}
+  if(!SYMS){sec.appendChild(el('p','empty','Searching the whole market…'));box.appendChild(sec);loadSymbols().then(function(l){if(view==='trade'&&!detailSym)renderTradeList();if(!l)flash('The full market list isn’t available right now.');});return;}
+  var res=searchMarket(q).filter(function(x){return !A[x[0]]||A[x[0]].extra;});
+  if(!res.length){sec.appendChild(el('p','empty','No US stock or fund matches “'+q+'”.'));box.appendChild(sec);return;}
+  var g=el('div','cards');res.forEach(function(x){marketCard(x[0],x[1],x[2],g);});sec.appendChild(g);box.appendChild(sec);}
+S=load();restoreEx();showGame();renderTape();
 var hh=(location.hash||'').replace('#','');
 if(/^me=[A-Za-z0-9_.]{3,16}$/.test(hh)){try{localStorage.setItem('investeen-lb-me',JSON.stringify({name:hh.slice(3)}));}catch(e){}hh='leaderboard';try{history.replaceState(null,'','#leaderboard');}catch(e){}}
 go(TABS.indexOf(hh)>-1?hh:'home',false);
