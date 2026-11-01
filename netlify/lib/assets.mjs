@@ -4,14 +4,13 @@
 import { getStore } from '@netlify/blobs';
 
 export const SYM_RE = /^[A-Z]{1,5}(\.[A-Z]{1,2})?$/;
-const MICS = new Set(['XNYS', 'XNAS', 'ARCX', 'BATS', 'XASE']);
 const TYPES = { 'Common Stock': 's', 'ADR': 's', 'REIT': 's', 'ETP': 'e' };
 const KEEP_UP = new Set(['ETF', 'ETN', 'US', 'USA', 'S&P', 'SPDR', 'AI', 'REIT', 'ADR', 'PLC', 'NV', 'SA', 'AG', 'LP', 'ESG', 'II', 'III', 'IV', 'NYSE', 'MSCI', 'FTSE', 'CRSP', 'AMD', 'IBM', 'ASML', 'TSMC', 'NASDAQ', 'UK', 'EM', 'SE', 'SPA', 'AB', 'ASA', 'NA', 'NYC', 'DBA', 'HP', 'UBS', 'BHP', 'BP', 'ING', 'JPM', 'GE']);
 export const SEC_LABEL = { tech: 'Technology', comm: 'Communication', cons: 'Consumer', auto: 'Cars', energy: 'Energy', health: 'Health care', staples: 'Consumer staples', fin: 'Financials', ind: 'Industrials', re: 'Real estate' };
 
 const key = () => (globalThis.Netlify && Netlify.env.get('FINNHUB_KEY')) || process.env.FINNHUB_KEY || '';
-export async function fh(path) {
-  const r = await fetch(`https://finnhub.io/api/v1/${path}${path.includes('?') ? '&' : '?'}token=${key()}`, { signal: AbortSignal.timeout(8000) });
+export async function fh(path, ms = 8000) {
+  const r = await fetch(`https://finnhub.io/api/v1/${path}${path.includes('?') ? '&' : '?'}token=${key()}`, { signal: AbortSignal.timeout(ms) });
   if (r.status === 429) { const e = new Error('The price service is busy. Try again in a minute.'); e.busy = true; throw e; }
   if (!r.ok) throw new Error('Finnhub ' + r.status);
   return r.json();
@@ -27,30 +26,45 @@ function nice(n) {
 }
 
 let MEM = null;
-export async function symbolList() {
-  if (MEM && Date.now() - MEM.at < 6 * 36e5) return MEM;
-  const st = getStore({ name: 'market', consistency: 'strong' });
-  let cached = null;
-  try { cached = await st.get('symbols-v1', { type: 'json' }); } catch (e) { /* none */ }
-  if (cached && Date.now() - cached.at < 3 * 864e5) { MEM = cached; return MEM; }
+const MIC_LIST = ['XNAS', 'XNYS', 'ARCX', 'BATS', 'XASE'];
+// Each exchange's list is fetched separately (big lists are slow), at most two per request,
+// and kept for 3 days. Until every exchange is loaded, the list is simply shorter.
+async function micList(st, mic, budget) {
+  let c = null;
+  try { c = await st.get('symbols-' + mic, { type: 'json' }); } catch (e) { /* none */ }
+  if (c && Date.now() - c.at < 3 * 864e5) return c;
+  if (budget.left <= 0) return c;
+  budget.left--;
   try {
-    const raw = await fh('stock/symbol?exchange=US');
+    const raw = await fh(`stock/symbol?exchange=US&mic=${mic}`, 9000);
     const list = [];
-    for (const x of raw) {
+    for (const x of raw || []) {
       const t = TYPES[x.type];
       const s = String(x.symbol || '');
-      if (!t || !MICS.has(x.mic) || (x.currency && x.currency !== 'USD') || !SYM_RE.test(s) || !x.description) continue;
+      if (!t || (x.currency && x.currency !== 'USD') || !SYM_RE.test(s) || !x.description) continue;
       list.push([s, nice(x.description), t]);
     }
-    if (list.length < 1000) throw new Error('Symbol list looks incomplete');
-    list.sort((a, b) => (a[0] < b[0] ? -1 : 1));
-    MEM = { at: Date.now(), list };
-    await st.setJSON('symbols-v1', MEM);
-    return MEM;
-  } catch (e) {
-    if (cached) { MEM = cached; return MEM; }
-    throw e;
+    const out = { at: Date.now(), list };
+    if (list.length) await st.setJSON('symbols-' + mic, out);
+    return out;
+  } catch (e) { budget.err = e.message; return c; }
+}
+export async function symbolList() {
+  if (MEM && MEM.complete && Date.now() - MEM.at < 6 * 36e5) return MEM;
+  const st = getStore({ name: 'market', consistency: 'strong' });
+  const budget = { left: 2 };
+  const seen = new Set(), list = [];
+  let complete = true, at = Date.now();
+  for (const mic of MIC_LIST) {
+    const c = await micList(st, mic, budget);
+    if (!c) { complete = false; continue; }
+    at = Math.min(at, c.at);
+    for (const r of c.list) if (!seen.has(r[0])) { seen.add(r[0]); list.push(r); }
   }
+  if (!list.length) throw new Error(budget.err || 'No symbols yet');
+  list.sort((a, b) => (a[0] < b[0] ? -1 : 1));
+  MEM = { at, list, complete };
+  return MEM;
 }
 async function findSym(sym) {
   const { list } = await symbolList();
