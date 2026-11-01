@@ -30,6 +30,21 @@ const withPinned = (m, list) => {
   return out;
 };
 
+// Months that carry over the previous month's scores (the owner's choice). Each email keeps its best score.
+const CARRY = { '2026-11': '2026-10' };
+async function fullBoard(boards, m, entries) {
+  const list = withPinned(m, entries);
+  const from = CARRY[m];
+  if (from) {
+    const old = (await boards.get(from, { type: 'json' })) || { entries: [] };
+    for (const e of withPinned(from, old.entries)) {
+      const i = list.findIndex((x) => x.email === e.email);
+      if (i < 0) list.push(e); else if (e.ret > list[i].ret) list[i] = e;
+    }
+  }
+  return list;
+}
+
 const rank = (list) => list.slice().sort((a, b) => b.ret - a.ret || a.at - b.at);
 const pub = (list, n) => rank(list).slice(0, n).map((e, i) => ({ rank: i + 1, name: e.name, ret: e.ret, worth: e.worth, at: e.at }));
 
@@ -41,7 +56,7 @@ export default async (req) => {
     const cur = (await boards.get(month, { type: 'json' })) || { entries: [] };
     const pm = prevMonth(month);
     const prev = (await boards.get(pm, { type: 'json' })) || { entries: [] };
-    const all = withPinned(month, cur.entries), pall = withPinned(pm, prev.entries);
+    const all = await fullBoard(boards, month, cur.entries), pall = withPinned(pm, prev.entries);
     return json({ month, entries: pub(all, 50), players: all.length, prev: { month: pm, top: pub(pall, 3) } }, 200, 'public, max-age=0, must-revalidate');
   }
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
@@ -63,7 +78,7 @@ export default async (req) => {
 
   const board = (await boards.get(month, { type: 'json' })) || { entries: [] };
   const lname = name.toLowerCase();
-  if (withPinned(month, board.entries).some((e) => e.name.toLowerCase() === lname && e.email !== email)) return json({ error: 'That username is taken this month. Try another one.' }, 409);
+  if ((await fullBoard(boards, month, board.entries)).some((e) => e.name.toLowerCase() === lname && e.email !== email)) return json({ error: 'That username is taken this month. Try another one.' }, 409);
   if (board.entries.length >= 20000) return json({ error: 'The leaderboard is full this month.' }, 503);
 
   const entry = { name, email, age: b.age, parent: b.age === '15-17', ret: Math.round((g.finalWorth / START - 1) * 10000) / 10000, worth: g.finalWorth, at: Date.now(), id: g.id };
@@ -77,7 +92,7 @@ export default async (req) => {
   g.submitted = true; g.entryEmail = email;
   await games.setJSON(g.id, g);
 
-  const ranked = rank(withPinned(month, board.entries));
+  const ranked = rank(await fullBoard(boards, month, board.entries));
   const me = ranked.findIndex((e) => e.email === email);
   return json({ ok: true, kept, month, rank: me + 1, players: ranked.length, ret: entry.ret, best: ranked[me].ret });
 };
