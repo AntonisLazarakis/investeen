@@ -240,6 +240,41 @@ h2 .i,h3 .i{width:1em;height:1em;vertical-align:-0.12em}
 .badge .ic .i{width:28px;height:28px}
 .checks li .ic .i{width:16px;height:16px}
 #btoast{display:flex;align-items:center;gap:8px}
+.mk-search{margin:0 0 12px}
+.mk-results{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:8px}
+.mk-tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:999px;width:max-content;max-width:100%;margin:20px 0 12px;flex-wrap:wrap}
+.mk-tabs button{min-height:38px;padding:0 14px;border-radius:999px;border:0;background:transparent;font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.mk-tabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(11,31,58,.15)}
+.mk-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+@media (max-width:760px){.mk-list{grid-template-columns:minmax(0,1fr)}}
+.mk-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);cursor:pointer;text-align:left;font:inherit;color:var(--ink);width:100%}
+.mk-results .mk-row{border-color:transparent;background:var(--sunk)}
+.mk-row:hover{border-color:var(--ink)}
+.mk-l{display:flex;align-items:center;gap:10px;min-width:0}
+.mk-n{display:flex;flex-direction:column;min-width:0}
+.mk-n b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mk-n small{color:var(--muted);font-size:12px}
+.mk-r{display:flex;flex-direction:column;align-items:flex-end;flex:none}
+.mk-p{font-weight:800}
+.mk-c{font-size:13px;font-weight:700}
+#mk-more{margin-top:12px}
+.sk-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:16px 0}
+.sk-id{display:flex;gap:14px;align-items:center;min-width:0}
+.sk-id h1{font-size:clamp(30px,5vw,48px)}
+.sk-logo{width:56px;height:56px;border-radius:14px;background:#fff;object-fit:contain;border:1px solid var(--line);flex:none}
+.sk-price{text-align:right}
+.sk-price .p{font-family:var(--display);font-weight:800;font-size:clamp(32px,5vw,44px);letter-spacing:-0.02em;line-height:1}
+.sk-price .c{font-weight:800;margin-top:4px}
+.sk-price small{color:var(--muted);font-size:12px}
+.sk-cv{height:320px}
+.sk-ohlc{font-size:13px;color:var(--muted);margin:8px 0 6px;min-height:1.4em}
+.sk-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 0}
+.sk-kv div{background:var(--sunk);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.sk-kv dt{font-size:13px;font-weight:700;color:var(--muted)}
+.sk-kv dd{margin:0;font-family:var(--display);font-weight:800;font-size:19px}
+.sk-kv small{color:var(--muted);font-size:12px;line-height:1.35}
+@media (max-width:480px){.sk-kv{grid-template-columns:minmax(0,1fr)}.sk-price{text-align:left}.sk-cv{height:260px}}
+.k-fund{background:#2F6FE4}
 .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:var(--sunk);border-radius:16px;padding:14px 16px;text-align:center}
 .vs b{display:block;font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-0.02em;line-height:1.1}
 .vs small{display:block;color:var(--muted);font-size:13px;font-weight:700;overflow-wrap:anywhere}
@@ -493,20 +528,25 @@ footer strong{color:var(--ink)}
       <div class="sim-card">
         <span class="tag">Simulator</span>
         <h2>$100,000. Real prices. Your call.</h2>
-        <p>Buy and sell real funds, bonds and stocks at live market prices. Your portfolio moves with the real market, every minute it's open.</p>
-        <ul aria-label="Game features"><li>Live prices</li><li>Every US stock &amp; fund</li><li>Real news</li><li>No stock limits</li></ul>
+        <p>Buy and sell real funds, bonds and stocks at live market prices. Your portfolio moves with the real market while it's open.</p>
+        <ul aria-label="Game features"><li>Live prices</li><li>50 popular stocks</li><li>Real news</li><li>No stock limits</li></ul>
         <button class="btn btn-lime" type="button" data-go="simulator" style="align-self:flex-start">Start investing</button>
       </div>
     </div>
   </div>
 
-  <div class="wrap block">
+  <div class="wrap block" id="market-block">
     <div class="block-head">
-      <h2>Live market</h2>
+      <div><h2>The <span class="hl">market</span></h2><p style="margin-top:10px">Look up any of 11,000+ US stocks and funds: price chart, company size, key numbers and news.</p></div>
       <span class="live" id="home-status"><i></i><span>Checking prices…</span></span>
     </div>
+    <div class="searchrow mk-search"><label for="mk-q" class="label" style="position:absolute;left:-9999px">Search the market</label><input id="mk-q" type="search" placeholder="Search any company or ticker: Apple, Nike, VOO…" autocomplete="off"></div>
+    <div class="mk-results" id="mk-results" hidden></div>
     <div class="tape" id="tape"></div>
-    <p class="offline-note" id="home-offline" hidden>Live prices aren't available here, so these are closing prices from 16 Oct 2026. On your InvesTeen website they update every minute.</p>
+    <div class="mk-tabs" role="group" aria-label="Sort stocks"><button type="button" data-mk="pop" aria-pressed="true">Popular</button><button type="button" data-mk="up" aria-pressed="false">Gainers</button><button type="button" data-mk="down" aria-pressed="false">Losers</button></div>
+    <div class="mk-list" id="mk-list"></div>
+    <button class="btn" type="button" id="mk-more">Show all</button>
+    <p class="offline-note" id="home-offline" hidden>Live prices aren't available here, so these are closing prices from 16 Oct 2026. On your InvesTeen website they update every couple of minutes.</p>
   </div>
 
   <div class="wrap block">
@@ -626,7 +666,7 @@ footer strong{color:var(--ink)}
     <p class="label">InvesTeen Simulator</p>
     <h1 style="margin-top:10px">Invest <span class="hl">$100,000</span> in the real market</h1>
     <p class="lede">Practice money, real prices. Play the live market, where your portfolio moves with the real stock market, or fast-forward three years from today's prices and see one possible future.</p>
-    <ul class="facts"><li>$100,000 practice cash</li><li>Live prices, updated every minute</li><li>Every US stock &amp; fund</li><li>Buy as many stocks as you want</li></ul>
+    <ul class="facts"><li>$100,000 practice cash</li><li>Live prices, updated every couple of minutes</li><li>50 popular stocks + funds &amp; bonds</li><li>Buy as many stocks as you want</li></ul>
     <form id="level-form" onsubmit="return false">
       <fieldset style="border:0;padding:0;margin:0">
         <legend class="label" style="margin-top:32px">Choose a mode</legend>
@@ -718,7 +758,7 @@ footer strong{color:var(--ink)}
         <div id="trade-list">
           <div class="searchrow">
             <label for="q" class="label" style="position:absolute;left:-9999px">Search investments</label>
-            <input id="q" type="search" placeholder="Search any US stock or fund: Costco, NVDA, bonds…" autocomplete="off">
+            <input id="q" type="search" placeholder="Search: Apple, Netflix, Costco, bonds…" autocomplete="off">
           </div>
           <div id="trade-sections"></div>
         </div>
@@ -749,7 +789,7 @@ footer strong{color:var(--ink)}
             <h2>How the game works</h2>
             <ul class="gl" style="margin-top:8px">
               <li><b>Cash</b><span>You start with $100,000 of practice money.</span></li>
-              <li><b>Prices</b><span>Real prices from the US stock market, refreshed every minute. They change while the market is open, Monday to Friday, 9:30 am – 4 pm New York time.</span></li>
+              <li><b>Prices</b><span>Real prices from the US stock market, refreshed every couple of minutes. They change while the market is open, Monday to Friday, 9:30 am – 4 pm New York time.</span></li>
               <li><b>Trades</b><span>Buy and sell at the latest price. No limit on how many stocks you own.</span></li>
               <li><b>Dividends</b><span>Funds, bonds and many stocks pay you a little cash over time, based on an approximate yearly rate.</span></li>
               <li><b>Saving</b><span>Your game is saved in this browser. Come back anytime.</span></li>
@@ -782,6 +822,13 @@ footer strong{color:var(--ink)}
       <button class="btn btn-lime btn-big" type="button" data-go="simulator">Play to get on the board</button>
       <a href="/rules.html">Contest rules</a>
     </div>
+  </div>
+</section>
+
+<section id="stock" role="region" aria-label="Stock details" hidden>
+  <div class="wrap" style="padding-block:20px 48px">
+    <button class="btn" type="button" id="sk-back">← Back to the market</button>
+    <div id="sk-body"></div>
   </div>
 </section>
 
@@ -961,20 +1008,22 @@ function withIco(n,txt){var f=document.createDocumentFragment();f.appendChild(ic
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 
 /* ================= TABS ================= */
-var TABS=['home','simulator','leaderboard','learn'];
+var TABS=['home','simulator','leaderboard','learn','stock'],NAVT=['home','simulator','leaderboard','learn'];
+var DOC_TITLE=document.title;
 function go(t,push){
   if(TABS.indexOf(t)<0)t='home';
   TABS.forEach(function(x){$(x).hidden=x!==t;var tb=$('tab-'+x);if(tb){tb.setAttribute('aria-selected',String(x===t));tb.tabIndex=x===t?0:-1;}});
   if(t==='simulator')requestAnimationFrame(function(){if(S)setView(view);});
   if(t==='leaderboard')renderBoard($('page-board'),$('pb-sub'));
+  if(t==='stock')renderStock();else document.title=DOC_TITLE;
   if(t==='learn'){renderLessons();renderBadges($('l-badges'),$('lbd-sub'));}
   if(push){try{history.replaceState(null,'','#'+t);}catch(e){}window.scrollTo(0,0);}
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)go(b.dataset.go,true);});
 document.querySelector('.tabs').addEventListener('keydown',function(e){
   if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
-  var i=TABS.indexOf(document.activeElement.dataset.go);if(i<0)return;
-  var n=TABS[(i+(e.key==='ArrowRight'?1:TABS.length-1))%TABS.length];go(n,true);$('tab-'+n).focus();e.preventDefault();
+  var i=NAVT.indexOf(document.activeElement.dataset.go);if(i<0)return;
+  var n=NAVT[(i+(e.key==='ArrowRight'?1:NAVT.length-1))%NAVT.length];go(n,true);$('tab-'+n).focus();e.preventDefault();
 });
 
 /* ================= RULE OF 72 ================= */
@@ -1024,11 +1073,43 @@ var RAW=[
  ['stock','SBUX','Starbucks',97.52,'Consumer',.025,'Coffee shops around the world.'],
  ['stock','HD','Home Depot',309.63,'Consumer',.029,'Home improvement stores: tools and building materials.'],
  ['stock','CVX','Chevron',224.99,'Energy',.03,'Oil and natural gas production.'],
- ['stock','KHC','Kraft Heinz',23.68,'Consumer staples',.06,'Packaged foods like ketchup, mac & cheese and snacks.']
+ ['stock','KHC','Kraft Heinz',23.68,'Consumer staples',.06,'Packaged foods like ketchup, mac & cheese and snacks.'],
+ ['stock','META','Meta Platforms',614.99,'Communication',.003,'Facebook, Instagram, WhatsApp and Meta Quest VR headsets.'],
+ ['stock','NFLX','Netflix',62.08,'Communication',0,'The world’s biggest video streaming service.'],
+ ['stock','AMD','AMD',504.80,'Technology',0,'Computer and AI chips that compete with Intel and Nvidia.'],
+ ['stock','INTC','Intel',65.76,'Technology',.011,'Processors for PCs and data centers, plus its own chip factories.'],
+ ['stock','ADBE','Adobe',250.23,'Technology',0,'Photoshop, Premiere, Acrobat and other creative software.'],
+ ['stock','CRM','Salesforce',229.17,'Technology',.008,'Cloud software that helps companies manage their customers.'],
+ ['stock','ORCL','Oracle',130.67,'Technology',.014,'Databases and cloud computing for businesses.'],
+ ['stock','AVGO','Broadcom',326.08,'Technology',.019,'Chips for networking, phones and AI data centers.'],
+ ['stock','PLTR','Palantir',184.11,'Technology',0,'Data and AI software for governments and companies.'],
+ ['stock','UBER','Uber',65.25,'Industrials',0,'Ride-hailing and Uber Eats food delivery.'],
+ ['stock','ABNB','Airbnb',164.39,'Consumer',0,'Book homes and experiences from hosts around the world.'],
+ ['stock','SPOT','Spotify',593.44,'Communication',0,'Music and podcast streaming.'],
+ ['stock','PYPL','PayPal',57.01,'Financials',.011,'Online payments with PayPal and Venmo.'],
+ ['stock','V','Visa',413.59,'Financials',.008,'The world’s biggest card payment network.'],
+ ['stock','MA','Mastercard',638.01,'Financials',.0055,'A card payment network used in over 200 countries.'],
+ ['stock','JPM','JPMorgan Chase',337.04,'Financials',.027,'The largest bank in the US.'],
+ ['stock','BAC','Bank of America',50.01,'Financials',.032,'One of the biggest US banks.'],
+ ['stock','GS','Goldman Sachs',894.55,'Financials',.018,'An investment bank that helps companies raise money and trade.'],
+ ['stock','BRK.B','Berkshire Hathaway',542.49,'Financials',0,'Warren Buffett’s company: insurers, a railway and big stakes in other firms.'],
+ ['stock','WMT','Walmart',123.51,'Consumer staples',.008,'The world’s biggest chain of stores.'],
+ ['stock','COST','Costco',1012.28,'Consumer staples',.007,'Membership warehouse stores that sell in bulk.'],
+ ['stock','TGT','Target',154.38,'Consumer',.034,'US department stores and online shopping.'],
+ ['stock','MCD','McDonald’s',258.12,'Consumer',.024,'The world’s biggest burger restaurant chain.'],
+ ['stock','KO','Coca-Cola',94.08,'Consumer staples',.031,'Coca-Cola, Sprite, Fanta and many other drinks.'],
+ ['stock','PEP','PepsiCo',137.34,'Consumer staples',.030,'Pepsi, Gatorade, Lay’s and Doritos.'],
+ ['stock','PG','Procter & Gamble',161.57,'Consumer staples',.025,'Tide, Pampers, Gillette and other household brands.'],
+ ['stock','LLY','Eli Lilly',1417.54,'Health care',.0075,'Medicines for diabetes, weight loss and cancer.'],
+ ['stock','UNH','UnitedHealth',406.97,'Health care',.014,'The biggest health insurance company in the US.'],
+ ['stock','XOM','ExxonMobil',187.25,'Energy',.025,'The largest US oil and gas company.'],
+ ['stock','BA','Boeing',171.55,'Industrials',.0025,'Passenger jets, defense and space.'],
+ ['stock','RBLX','Roblox',42.99,'Communication',0,'The online platform where players build and play games.'],
+ ['stock','LULU','Lululemon',107.24,'Consumer',0,'Yoga pants and athletic clothing.']
 ];
 var A={},LIST=[];
 var SECKEY={'Technology':'tech','Communication':'comm','Consumer':'cons','Cars':'auto','Energy':'energy','Health care':'health','Consumer staples':'staples','Financials':'fin','Industrials':'ind','Real estate':'re'};
-var SIG={SPY:.17,QQQ:.22,IWV:.18,XLF:.20,XLE:.27,XLC:.22,XLI:.19,XLK:.25,XLRE:.21,XLV:.15,XLP:.13,BND:.06,TLT:.15,LQD:.09,AAPL:.29,MSFT:.27,AMZN:.32,GOOG:.29,NVDA:.48,TSLA:.58,F:.35,GM:.35,PFE:.25,JNJ:.17,DIS:.30,NKE:.34,UAA:.48,CMG:.32,SBUX:.30,HD:.24,CVX:.26,KHC:.22};
+var SIG={SPY:.17,QQQ:.22,IWV:.18,XLF:.20,XLE:.27,XLC:.22,XLI:.19,XLK:.25,XLRE:.21,XLV:.15,XLP:.13,BND:.06,TLT:.15,LQD:.09,AAPL:.29,MSFT:.27,AMZN:.32,GOOG:.29,NVDA:.48,TSLA:.58,F:.35,GM:.35,PFE:.25,JNJ:.17,DIS:.30,NKE:.34,UAA:.48,CMG:.32,SBUX:.30,HD:.24,CVX:.26,KHC:.22,META:.38,NFLX:.38,AMD:.52,INTC:.48,ADBE:.34,CRM:.34,ORCL:.38,AVGO:.42,PLTR:.62,UBER:.40,ABNB:.40,SPOT:.45,PYPL:.38,V:.20,MA:.21,JPM:.24,BAC:.28,GS:.28,'BRK.B':.17,WMT:.20,COST:.21,TGT:.32,MCD:.18,KO:.15,PEP:.17,PG:.16,LLY:.32,UNH:.30,XOM:.25,BA:.38,RBLX:.60,LULU:.42};
 RAW.forEach(function(r){var o={cls:r[0],sym:r[1],name:r[2],p0:r[3],sec:r[4],yld:r[5],about:r[6]};o.sk=SECKEY[o.sec]||'';o.sig=SIG[o.sym];
   if(o.cls==='index'){o.a=o.sym==='QQQ'?.88:.98;o.b=o.sym==='QQQ'?.4:0;}else if(o.cls==='sector'){o.a=.72;o.b=.55;}else if(o.cls==='bond'){o.a=.1;o.b=.85;}else{o.a=.55;o.b=.35;}
   o.c=Math.sqrt(Math.max(0,1-o.a*o.a-o.b*o.b));o.mu=o.cls==='bond'?.045:.085;A[o.sym]=o;LIST.push(o);});
@@ -1062,6 +1143,7 @@ function liveDayChg(s){var q=LIVE.q[s];return q&&q.pc>0&&q.c>0?q.c/q.pc-1:null;}
 function liveDayAbs(s){var q=LIVE.q[s];return q&&q.pc>0&&q.c>0?q.c-q.pc:0;}
 var QD=65,NQ=12;
 function isF(){return !!(S&&S.mode==='future');}
+function simHas(s){if(!isF())return true;var a=S.P[s];return !!(a&&S.P.SPY&&a.length===S.P.SPY.length);}
 function px(s){if(isF()){var a=S.P[s];return a[a.length-1];}return livePx(s);}
 function dayChg(s){if(isF()){var a=S.P[s],n=a.length-1;return n<QD?null:a[n]/a[n-QD]-1;}return liveDayChg(s);}
 function dayAbs(s){if(isF()){var a=S.P[s],n=a.length-1;return n<QD?0:a[n]-a[n-QD];}return liveDayAbs(s);}
@@ -1107,11 +1189,11 @@ function renderTape(){
     var o=A[s],b=el('button','quote');b.type='button';b.appendChild(el('span','s',s));b.appendChild(el('span','n',o.name));
     b.appendChild(el('span','p num',usd.format(livePx(s))));var c=liveDayChg(s);
     b.appendChild(el('span','c num '+(c==null?'':c>=0?'up':'down'),c==null?' ':(c>=0?'▲ ':'▼ ')+Math.abs(c*100).toFixed(2)+'%'));
-    b.setAttribute('aria-label',o.name+', '+usd.format(livePx(s))+'. Open in the simulator');
-    b.addEventListener('click',function(){go('simulator',true);if(S)openDetail(s);});
+    b.setAttribute('aria-label',o.name+', '+usd.format(livePx(s))+'. See details');
+    b.addEventListener('click',function(){openStock(s);});
     box.appendChild(b);
   });
-  paintStatus('home-status');$('home-offline').hidden=LIVE.ok!==false;
+  paintStatus('home-status');$('home-offline').hidden=LIVE.ok!==false;if(typeof renderMarketList==='function')renderMarketList();
 }
 function newsItem(n,lead){
   var a=el('article','story'+(lead?' lead':''));
@@ -1277,7 +1359,7 @@ $('level-form').addEventListener('submit',function(){
   var b=$('start');b.disabled=true;b.textContent='Setting up your future…';
   var ch=CH;
   api('/game/start',ch?{challenge:ch.code}:{}).then(function(r){
-    var g=newGame(v,md);g.srv=r.id;g.pend=[];g.d0=r.d0||g.d0;if(r.vs)g.vs=r.vs;LIST.forEach(function(o){var p=r.p0&&r.p0[o.sym];if(p>0)g.P[o.sym]=[p];});
+    var g=newGame(v,md);g.srv=r.id;g.v=r.v||1;g.pend=[];g.d0=r.d0||g.d0;if(r.vs)g.vs=r.vs;LIST.forEach(function(o){var p=r.p0&&r.p0[o.sym];if(p>0)g.P[o.sym]=[p];});
     if(ch)endChallengeLink();go(g);
   }).catch(function(e){
     if(ch&&e&&e.status===404){endChallengeLink();flash('That challenge link has expired, so this is a normal game.');api('/game/start',{}).then(function(r){var g=newGame(v,md);g.srv=r.id;g.pend=[];g.d0=r.d0||g.d0;LIST.forEach(function(o){var p=r.p0&&r.p0[o.sym];if(p>0)g.P[o.sym]=[p];});go(g);}).catch(function(){go(newGame(v,md));});return;}
@@ -1377,7 +1459,7 @@ function renderTradeList(){
   $('trade-list').hidden=false;$('trade-detail').hidden=true;
   var box=$('trade-sections'),q=$('q').value.trim().toLowerCase();box.innerHTML='';var any=false;
   ['index','sector','bond','stock'].forEach(function(c){
-    var items=LIST.filter(function(o){return o.cls===c&&(!q||(o.sym+' '+o.name+' '+o.sec+' '+CLS[c]).toLowerCase().indexOf(q)>-1);});
+    var items=LIST.filter(function(o){return o.cls===c&&simHas(o.sym)&&(!q||(o.sym+' '+o.name+' '+o.sec+' '+CLS[c]).toLowerCase().indexOf(q)>-1);});if(c==='stock')items.sort(function(a,b){return a.name.localeCompare(b.name);});
     if(!items.length)return;any=true;
     var sec=el('div','asset-sec'),h=el('h2'),i=el('i');i.style.background='var('+(c==='bond'?'--c-bonds':c==='stock'?'--c-stocks':'--c-funds')+')';
     h.appendChild(i);h.appendChild(document.createTextNode(CLS[c]));h.appendChild(el('small',null,CLS_ABOUT[c]));sec.appendChild(h);
@@ -1414,7 +1496,7 @@ function renderDetail(sym){
   rows.forEach(function(r){kv.appendChild(el('dt',null,r[0]));kv.appendChild(el('dd',null,r[1]));});left.appendChild(kv);
   var tr=el('div','trade-row'),bb=el('button','btn btn-lime','Buy'),sb=el('button','btn btn-ink','Sell');bb.type=sb.type='button';sb.disabled=!h.qty;
   bb.addEventListener('click',function(){openTrade(sym,'buy');});sb.addEventListener('click',function(){openTrade(sym,'sell');});tr.appendChild(bb);tr.appendChild(sb);left.appendChild(tr);
-  var right=el('div');right.appendChild(el('p','label','Latest news about '+o.sym));var ul=el('ul','feed');ul.style.marginTop='10px';ul.appendChild(el('li','empty','Loading news…'));right.appendChild(ul);
+  var right=el('div');if(!isF()){var fl=el('button','linkbtn','See the full '+o.sym+' page: chart, market cap and more');fl.type='button';fl.style.marginBottom='12px';fl.addEventListener('click',function(){openStock(sym);});right.appendChild(fl);}right.appendChild(el('p','label','Latest news about '+o.sym));var ul=el('ul','feed');ul.style.marginTop='10px';ul.appendChild(el('li','empty','Loading news…'));right.appendChild(ul);
   g2.appendChild(left);g2.appendChild(right);panel.appendChild(g2);box.appendChild(panel);
   if(isF()){ul.innerHTML='';var fn=S.news.filter(function(n){return n.fx.some(function(f){return f.s===sym;})||n.kind==='Market';}).slice(-5).reverse();
     if(!fn.length)ul.appendChild(el('li','empty','No news yet. Headlines appear as the quarters go by.'));
@@ -1442,9 +1524,15 @@ function renderGameNews(){
         li.appendChild(el('div','hd',n.t));li.appendChild(el('p','why',n.why));var tg=el('div','tags');n.fx.forEach(function(f){var b=el('button',f.r>=0?'up':'down',f.s+' '+pct(f.r,1));b.type='button';b.addEventListener('click',function(){openDetail(f.s);});tg.appendChild(b);});li.appendChild(tg);ul.appendChild(li);});});
     return;}
   if(!NEWS.items){ul.appendChild(el('li','empty','Loading news…'));return;}
-  if(!NEWS.items.length){$('gn-sub').textContent='Not available here';ul.appendChild(el('li','empty','Live news shows up here on your InvesTeen website. Check the Home tab for this week’s summary.'));return;}
-  $('gn-sub').textContent='Updated '+ago(NEWS.updated);
-  NEWS.items.slice(0,25).forEach(function(n){ul.appendChild(feedItem(n,false));});
+  if(!NEWS.items.length){$('gn-sub').textContent='Not available here';ul.appendChild(el('li','empty','Live news shows up here on your InvesTeen website. Check the Home tab for this week’s summary.'));}
+  else{$('gn-sub').textContent='Updated '+ago(NEWS.updated);
+  NEWS.items.slice(0,25).forEach(function(n){ul.appendChild(feedItem(n,false));});}
+  var mine=Object.keys(S.hold).filter(function(k){return S.hold[k].qty>0&&A[k]&&A[k].cls==='stock';}).sort(function(x,y){return S.hold[y].qty*px(y)-S.hold[x].qty*px(x);}).slice(0,5);
+  if(mine.length){var hd=el('li','qhead','About your stocks');ul.insertBefore(hd,ul.firstChild);var at=hd.nextSibling,gh=el('li','qhead','Whole market');ul.insertBefore(gh,at);
+    Promise.all(mine.map(function(k){return companyNews(k).then(function(it){return (it||[]).slice(0,3).map(function(n){n._s=k;return n;});});})).then(function(lists){
+      var all=[].concat.apply([],lists).sort(function(x,y){return (y.datetime||0)-(x.datetime||0);}).slice(0,10);
+      if(!all.length){ul.insertBefore(el('li','empty','No news this week about '+mine.join(', ')+'.'),gh);return;}
+      all.forEach(function(n){var li=feedItem(n,false);var m=li.querySelector('.meta');if(m){var c=el('span','chip',n._s);m.insertBefore(c,m.firstChild);}ul.insertBefore(li,gh);});});}
 }
 
 /* ================= TRADE DIALOG ================= */
@@ -1585,7 +1673,7 @@ function drawLine(c,data,o){
   ctx.beginPath();ctx.arc(X(n-1),Y(data[n-1]),5.5,0,7);ctx.fillStyle='#C6F432';ctx.fill();ctx.lineWidth=2.5;ctx.strokeStyle=ink;ctx.stroke();}
 function applyQuarter(r){
   var q=S.q,d0=q*QD,w0=worth(),spy0=px('SPY'),p0={};LIST.forEach(function(o){p0[o.sym]=px(o.sym);});
-  var XS=Object.keys(S.ex||{}).filter(function(k){return S.P[k]&&r.paths[k];});for(var i=0;i<QD;i++){LIST.forEach(function(o){S.P[o.sym].push(r.paths[o.sym][i]);});XS.forEach(function(k){S.P[k].push(r.paths[k][i]);});S.worth.push(worth());}
+  var XS=Object.keys(S.ex||{}).filter(function(k){return S.P[k]&&r.paths[k];}),CL=LIST.filter(function(o){return S.P[o.sym]&&r.paths[o.sym]&&S.P[o.sym].length===S.P.SPY.length;});for(var i=0;i<QD;i++){CL.forEach(function(o){S.P[o.sym].push(r.paths[o.sym][i]);});XS.forEach(function(k){S.P[k].push(r.paths[k][i]);});S.worth.push(worth());}
   S.cash=r.cash;S.div=Math.round((S.div+r.div)*100)/100;S.worth[S.worth.length-1]=worth();
   r.news.forEach(function(e){var d=d0+e.dd;S.news.push({q:q,d:d,kind:e.kind,t:e.t,why:e.why,fx:e.tags.map(function(s){return {s:s,r:S.P[s][d]/S.P[s][d-1]-1};})});});
   S.q++;S.pend=[];var best=null,worst=null;LIST.forEach(function(o){var g=px(o.sym)/p0[o.sym]-1;if(!best||g>best.g)best={s:o.sym,g:g};if(!worst||g<worst.g)worst={s:o.sym,g:g};});
@@ -1886,7 +1974,7 @@ $('ls-sim').addEventListener('click',function(){closeModal('m-lesson');go('simul
 // Any US stock or fund beyond the 32 starters. Details come from /api/asset (live game) or /api/game/add (future game).
 var SYMS=null,SYMS_P=null;
 function loadSymbols(){if(SYMS)return Promise.resolve(SYMS);if(SYMS_P)return SYMS_P;
-  SYMS_P=fetch(API+'/symbols').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){SYMS=(j.list||[]).filter(function(x){return !A[x[0]]||A[x[0]].extra;});if(j.complete===false)setTimeout(function(){SYMS=null;SYMS_P=null;},30000);return SYMS;}).catch(function(){SYMS_P=null;return null;});return SYMS_P;}
+  SYMS_P=fetch(API+'/symbols').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){SYMS=j.list||[];if(j.complete===false)setTimeout(function(){SYMS=null;SYMS_P=null;},30000);return SYMS;}).catch(function(){SYMS_P=null;return null;});return SYMS_P;}
 function exObj(m){var cls=m.cls==='bond'?'bond':m.cls==='fund'?'fund':'stock',o={extra:true,cls:cls,sym:m.sym,name:m.name,sec:m.sec||'',sk:m.sk||'',yld:+m.yld||0,about:m.about||'',p0:m.p||0};
   o.sig=Math.min(cls==='stock'?.8:.6,Math.max(cls==='bond'?.03:.1,+m.sig||(cls==='bond'?.07:cls==='fund'?.2:.35)));
   if(cls==='bond'){o.a=.1;o.b=.85;o.dur=/long|20\+|25\+/i.test(o.name)?15:/short|0-|1-3|t-bill/i.test(o.name)?2:6;o.sig=o.dur>10?.14:o.dur<3?.03:.06;}else if(cls==='fund'){o.a=.85;o.b=o.sk?.3:0;}else{o.a=.55;o.b=o.sk?.35:0;}
@@ -1922,18 +2010,120 @@ function renderMarketSection(box,q){
   var ex=exList().filter(function(o){return !q||(o.sym+' '+o.name).toLowerCase().indexOf(q)>-1;});
   if(ex.length){var s1=el('div','asset-sec'),h1=el('h2'),i1=el('i');i1.style.background='var(--c-stocks)';h1.appendChild(i1);h1.appendChild(document.createTextNode('Your picks from the market'));s1.appendChild(h1);
     var g1=el('div','cards');ex.forEach(function(o){marketCard(o.sym,o.name,o.cls==='stock'?'s':'e',g1);});s1.appendChild(g1);box.insertBefore(s1,box.firstChild);}
-  var sec=el('div','asset-sec mkt'),h=el('h2'),i=el('i');i.style.background='var(--ink)';h.appendChild(i);h.appendChild(document.createTextNode('Whole US market'));
-  h.appendChild(el('small',null,SYMS?SYMS.length.toLocaleString('en-US')+' more stocks and funds':'Every stock and fund on the US market'));sec.appendChild(h);
-  if(isF()&&!S.srv){sec.appendChild(el('p','empty','This game is offline, so it only has the 32 starter investments above.'));box.appendChild(sec);return;}
-  if(!q){sec.appendChild(el('p','empty','Looking for something else? Type any company or ticker in the search box, like Costco, Netflix or AMD.'));box.appendChild(sec);return;}
-  if(!SYMS){sec.appendChild(el('p','empty','Searching the whole market…'));box.appendChild(sec);loadSymbols().then(function(l){if(view==='trade'&&!detailSym)renderTradeList();if(!l)flash('The full market list isn’t available right now.');});return;}
-  var res=searchMarket(q).filter(function(x){return !A[x[0]]||A[x[0]].extra;});
-  if(!res.length){sec.appendChild(el('p','empty','No US stock or fund matches “'+q+'”.'));box.appendChild(sec);return;}
-  var g=el('div','cards');res.forEach(function(x){marketCard(x[0],x[1],x[2],g);});sec.appendChild(g);box.appendChild(sec);}
-S=load();restoreEx();showGame();renderTape();
+  if(!box.querySelector('.acard'))box.appendChild(el('p','empty','Nothing in the simulator matches \u201c'+$('q').value+'\u201d. Want to look up any US stock? Use the Market section on the Home page.'));}
+/* ================= MARKET SECTION + STOCK PAGES ================= */
+var POPULAR=['AAPL','NVDA','MSFT','AMZN','GOOG','META','TSLA','NFLX','AMD','COST','NKE','DIS','SBUX','MCD','KO','PEP','JPM','V','MA','WMT','SPOT','RBLX','PLTR','UBER','ABNB','LLY','BA','INTC','ADBE','CRM','ORCL','AVGO','PYPL','BAC','GS','BRK.B','TGT','PG','UNH','XOM','CVX','HD','JNJ','PFE','F','GM','CMG','LULU','UAA','KHC'];
+var MK={tab:'pop',all:false};
+function fmtBig(x){if(x==null||!isFinite(x))return '—';var a=Math.abs(x);return a>=1e12?'$'+(x/1e12).toFixed(2)+' trillion':a>=1e9?'$'+(x/1e9).toFixed(1)+' billion':a>=1e6?'$'+(x/1e6).toFixed(0)+' million':usd0.format(x);}
+function fmtCount(x){if(x==null||!isFinite(x))return '—';return x>=1e9?(x/1e9).toFixed(2)+' billion':x>=1e6?(x/1e6).toFixed(0)+' million':Math.round(x).toLocaleString('en-US');}
+function renderMarketList(){var box=$('mk-list');if(!box)return;box.innerHTML='';
+  var rows=POPULAR.filter(function(s){return A[s];}).map(function(s){return {s:s,c:liveDayChg(s)};});
+  if(MK.tab==='up')rows=rows.filter(function(r){return r.c!=null;}).sort(function(a,b){return b.c-a.c;});
+  if(MK.tab==='down')rows=rows.filter(function(r){return r.c!=null;}).sort(function(a,b){return a.c-b.c;});
+  var lim=MK.all?rows.length:10;
+  rows.slice(0,lim).forEach(function(r){box.appendChild(stockRow(r.s,A[r.s].name,usd.format(livePx(r.s)),r.c));});
+  var more=$('mk-more');more.hidden=rows.length<=10;more.textContent=MK.all?'Show fewer':'Show all '+rows.length+' popular stocks';
+  Array.prototype.forEach.call(document.querySelectorAll('[data-mk]'),function(b){b.setAttribute('aria-pressed',String(b.dataset.mk===MK.tab));});}
+function stockRow(sym,name,price,chg,note){var b=el('button','mk-row');b.type='button';
+  var l=el('span','mk-l');l.appendChild(el('span','tk-badge k-stock',sym.length>5?sym.slice(0,5):sym));var nm=el('span','mk-n');nm.appendChild(el('b',null,name));if(note)nm.appendChild(el('small',null,note));l.appendChild(nm);b.appendChild(l);
+  var r=el('span','mk-r');if(price)r.appendChild(el('span','num mk-p',price));if(chg!=null)r.appendChild(el('span','num mk-c '+(chg>=0?'up':'down'),(chg>=0?'▲ ':'▼ ')+Math.abs(chg*100).toFixed(2)+'%'));b.appendChild(r);
+  b.addEventListener('click',function(){openStock(sym);});return b;}
+document.addEventListener('click',function(e){var t=e.target.closest('[data-mk]');if(t){MK.tab=t.dataset.mk;renderMarketList();}});
+$('mk-more').addEventListener('click',function(){MK.all=!MK.all;renderMarketList();});
+var mkT=null;
+$('mk-q').addEventListener('focus',function(){loadSymbols();});
+$('mk-q').addEventListener('input',function(){clearTimeout(mkT);mkT=setTimeout(renderMkResults,120);});
+function renderMkResults(){var q=$('mk-q').value.trim(),box=$('mk-results');box.innerHTML='';
+  if(!q){box.hidden=true;return;}box.hidden=false;
+  if(!SYMS){box.appendChild(el('p','empty','Searching the whole market…'));loadSymbols().then(function(l){if(l)renderMkResults();else{box.innerHTML='';box.appendChild(el('p','empty','The full stock list isn’t available right now. Try again in a minute.'));}});return;}
+  var res=searchMarket(q);
+  if(!res.length){box.appendChild(el('p','empty','No US stock or fund matches “'+q+'”.'));return;}
+  res.slice(0,12).forEach(function(x){var known=A[x[0]];box.appendChild(stockRow(x[0],known?known.name:x[1],known&&LIVE.q[x[0]]?usd.format(livePx(x[0])):null,known?liveDayChg(x[0]):null,x[2]==='e'?'Fund (ETF)':'Stock'));});}
+
+/* ---- stock page ---- */
+var STOCK={sym:null,data:{},range:'3M'};
+function openStock(sym){STOCK.sym=sym;go('stock',true);try{history.replaceState(null,'','#stock/'+encodeURIComponent(sym));}catch(e){}}
+$('sk-back').addEventListener('click',function(){go('home',false);try{history.replaceState(null,'','#home');}catch(e){}var m=$('market-block');if(m)window.scrollTo({top:Math.max(0,m.offsetTop-80)});});
+function renderStock(){var sym=STOCK.sym,box=$('sk-body');if(!sym){go('home');return;}
+  document.title=sym+' · InvesTeen';
+  var d=STOCK.data[sym];
+  if(d&&Date.now()-d.t<60e3){drawStockPage(d.j);return;}
+  box.innerHTML='';box.appendChild(el('p','empty','Loading '+sym+'…'));
+  api('/stock?s='+encodeURIComponent(sym)).then(function(j){STOCK.data[sym]={t:Date.now(),j:j};if(STOCK.sym===sym)drawStockPage(j);})
+  .catch(function(e){if(STOCK.sym!==sym)return;box.innerHTML='';var p=el('div','panel');p.appendChild(el('h2',null,sym));p.appendChild(el('p',null,e.message||'This stock isn’t available right now.'));
+    var b=el('button','btn','Try again');b.type='button';b.addEventListener('click',renderStock);p.appendChild(b);box.appendChild(p);});}
+function drawStockPage(j){var a=j.asset,q=j.quote,inf=a.info||{},box=$('sk-body');box.innerHTML='';
+  var head=el('div','sk-head'),idn=el('div','sk-id');
+  if(inf.logo){var im=document.createElement('img');im.src=inf.logo;im.alt='';im.className='sk-logo';im.referrerPolicy='no-referrer';im.onerror=function(){im.remove();};idn.appendChild(im);}
+  var nm=el('div');nm.appendChild(el('h1',null,a.name));var chips=el('div','meta');chips.appendChild(el('span','chip',a.sym));
+  if(inf.exchange)chips.appendChild(el('span','chip',inf.exchange.replace(/ NMS.*| - .*/,'').replace('NEW YORK STOCK EXCHANGE, INC.','NYSE')));
+  chips.appendChild(el('span','chip',a.etf?(a.cls==='bond'?'Bond fund':'Fund (ETF)'):(inf.industry||'Stock')));nm.appendChild(chips);idn.appendChild(nm);head.appendChild(idn);
+  var pr=el('div','sk-price');pr.appendChild(el('div','p num',usd.format(q.c)));
+  var dc=q.pc>0?q.c/q.pc-1:null;pr.appendChild(el('div','c num '+(dc==null?'':dc>=0?'up':'down'),dc==null?'':sgn$(q.c-q.pc)+' ('+pct(dc)+') today'));
+  if(q.t)pr.appendChild(el('small',null,'Last trade '+new Date(q.t*1000).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})));head.appendChild(pr);box.appendChild(head);
+  // chart
+  var cp=el('div','panel sk-chart'),ch=el('div','panel-head');ch.appendChild(el('h2',null,'Price chart'));var rg=el('div','views');
+  ['1M','3M','6M','1Y','All'].forEach(function(r){var b=el('button','view-btn',r);b.type='button';b.setAttribute('aria-pressed',String(STOCK.range===r));b.addEventListener('click',function(){STOCK.range=r;drawStockPage(j);});rg.appendChild(b);});
+  ch.appendChild(rg);cp.appendChild(ch);var ohlc=el('p','sk-ohlc num');cp.appendChild(ohlc);
+  var cv=el('canvas','chart sk-cv');cv.setAttribute('role','img');cv.setAttribute('aria-label',a.name+' daily price candles');cp.appendChild(cv);
+  var days=(j.candles||[]).slice(),cut={'1M':22,'3M':66,'6M':130,'1Y':260,'All':1e9}[STOCK.range];days=days.slice(-cut);
+  var hist=(j.candles||[]).length;
+  var note=el('p','lb-note');note.style.margin='10px 0 0';
+  note.textContent=hist<30?'Each candle is one trading day. InvesTeen started recording '+a.sym+' on '+(hist?fmtD(j.candles[0][0]):'today')+', so the chart grows by one candle every day the market is open.':'Each candle is one trading day: green if the price closed higher than it opened, red if lower. The thin lines show the day’s high and low.';
+  cp.appendChild(note);box.appendChild(cp);
+  requestAnimationFrame(function(){drawCandles(cv,days,ohlc,q);});
+  // numbers
+  var g2=el('div','grid2'),left=el('div','panel');left.appendChild(el('h2',null,'Key numbers'));var kv=el('dl','sk-kv');
+  var mcap=inf.mcap!=null?inf.mcap*1e6:null,sh=inf.shares!=null?inf.shares*1e6:null;
+  var rows=[
+    ['Market cap',fmtBig(mcap),'What the whole company is worth: share price × number of shares.'],
+    ['P/E ratio',inf.pe!=null&&inf.pe>0?inf.pe.toFixed(1):'—','How many dollars investors pay for each $1 of yearly profit.'],
+    ['Earnings per share',inf.eps!=null?usd.format(inf.eps):'—','The company’s profit over the last year, split across each share.'],
+    ['Dividend yield',a.yld?(a.yld*100).toFixed(2)+'% a year':'None','Cash paid to shareholders each year, as a % of the price.'],
+    ['52-week range',inf.lo52!=null&&inf.hi52!=null?usd.format(inf.lo52)+' – '+usd.format(inf.hi52):'—','The lowest and highest price in the past year.'],
+    ['Beta',inf.beta!=null?inf.beta.toFixed(2):'—','Above 1 means it usually swings more than the market. Below 1, less.'],
+    ['Shares',fmtCount(sh),'How many shares of the company exist.'],
+    ['Day range',q.l>0&&q.h>0?usd.format(q.l)+' – '+usd.format(q.h):'—','Today’s lowest and highest price.'],
+    ['Open',q.o>0?usd.format(q.o):'—','The first price today.'],
+    ['Previous close',q.pc>0?usd.format(q.pc):'—','The last price yesterday.']];
+  if(inf.ret52!=null)rows.splice(5,0,['Past year',pct(inf.ret52/100,1),'How much the price changed in the last 52 weeks.']);
+  rows.forEach(function(r){if(a.etf&&/P\/E|Earnings|Market cap|Shares/.test(r[0])&&r[1]==='—')return;var w=el('div');w.appendChild(el('dt',null,r[0]));w.appendChild(el('dd','num',r[1]));w.appendChild(el('small',null,r[2]));kv.appendChild(w);});
+  left.appendChild(kv);
+  var right=el('div','panel');right.appendChild(el('h2',null,'About '+a.name));
+  var ab=a.about||'';var bits=[];if(inf.ipo)bits.push('It has been on the stock market since '+new Date(inf.ipo+'T12:00:00').getFullYear()+'.');if(inf.country&&inf.country!=='US')bits.push('Its home country is '+inf.country+'.');
+  right.appendChild(el('p',null,ab+(bits.length?' '+bits.join(' '):'')));
+  if(inf.web){var wl=el('a',null,inf.web.replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,''));wl.href=inf.web;wl.target='_blank';wl.rel='noopener nofollow';var wp=el('p');wp.appendChild(document.createTextNode('Website: '));wp.appendChild(wl);right.appendChild(wp);}
+  if(j.inSim){var sb=el('button','btn btn-lime','Practice trading '+a.sym+' in the simulator');sb.type='button';sb.style.marginTop='12px';
+    sb.addEventListener('click',function(){go('simulator',true);if(S&&(!isF()||(S.P[a.sym]&&S.P[a.sym].length===S.P.SPY.length)))openDetail(a.sym);});right.appendChild(sb);}
+  else right.appendChild(el('p','lb-note','The simulator has 50 of the most popular stocks plus funds and bonds. This one is just for looking up.'));
+  var nh=el('p','label','Latest news about '+a.sym);nh.style.marginTop='20px';right.appendChild(nh);var ul=el('ul','feed');ul.style.marginTop='10px';ul.appendChild(el('li','empty','Loading news…'));right.appendChild(ul);
+  g2.appendChild(left);g2.appendChild(right);g2.style.marginTop='16px';box.appendChild(g2);
+  box.appendChild(el('p','note','Prices may be a few minutes behind. Company numbers come from Finnhub and may be approximate. Not financial advice.'));
+  companyNews(a.sym).then(function(items){if(STOCK.sym!==a.sym)return;ul.innerHTML='';
+    if(items===null){ul.appendChild(el('li','empty','News isn’t available right now.'));return;}
+    if(!items.length){ul.appendChild(el('li','empty','No news about '+a.sym+' in the last week.'));return;}
+    items.slice(0,6).forEach(function(n){ul.appendChild(feedItem(n,true));});});}
+function drawCandles(c,days,label,q){
+  var dpr=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);
+  var ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  var muted=css('--muted'),line=css('--line'),up=css('--gain'),dn=css('--loss');
+  function lab(d){if(!d){label.textContent='';return;}var ch=d[4]/d[1]-1;label.textContent=fmtD(d[0])+' · Open '+usd.format(d[1])+' · High '+usd.format(d[2])+' · Low '+usd.format(d[3])+' · Close '+usd.format(d[4])+' ('+pct(ch)+')';}
+  if(!days.length){ctx.fillStyle=muted;ctx.font='600 14px "DM Sans", system-ui';ctx.textAlign='center';ctx.fillText('The first candle appears after the next trading day.',w/2,h/2);lab(null);return;}
+  var lo=Math.min.apply(null,days.map(function(d){return d[3];})),hi=Math.max.apply(null,days.map(function(d){return d[2];}));if(hi-lo<hi*.01){var m=(hi+lo)/2;hi=m*1.006;lo=m*.994;}var pad=(hi-lo)*.08;lo-=pad;hi+=pad;
+  var L=6,R=62,T=10,B=26,pw=w-L-R,ph=h-T-B,n=Math.max(days.length,12),slot=pw/n,cw=Math.max(2,Math.min(18,slot*.65));
+  function X(i){return L+slot*(i+.5)+(n-days.length)*slot;}function Y(v){return T+(1-(v-lo)/(hi-lo))*ph;}
+  ctx.font='600 12px "DM Sans", system-ui, sans-serif';ctx.textBaseline='middle';ctx.lineWidth=1;var st=niceStep(hi-lo);
+  for(var v=Math.ceil(lo/st)*st;v<=hi;v+=st){var yy=Math.round(Y(v))+.5;ctx.strokeStyle=line;ctx.beginPath();ctx.moveTo(L,yy);ctx.lineTo(L+pw,yy);ctx.stroke();ctx.fillStyle=muted;ctx.textAlign='left';ctx.fillText(usd.format(v).replace(/\.00$/,''),L+pw+8,yy);}
+  days.forEach(function(d,i){var x=Math.round(X(i))+.5,col=d[4]>=d[1]?up:dn;ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x,Y(d[2]));ctx.lineTo(x,Y(d[3]));ctx.stroke();
+    var y1=Y(Math.max(d[1],d[4])),y2=Y(Math.min(d[1],d[4]));ctx.fillStyle=col;ctx.fillRect(x-cw/2,y1,cw,Math.max(1.5,y2-y1));});
+  ctx.textBaseline='top';ctx.fillStyle=muted;ctx.textAlign='left';ctx.fillText(fmtD(days[0][0]),L+(n-days.length)*slot,T+ph+8);if(days.length>1){ctx.textAlign='right';ctx.fillText(fmtD(days[days.length-1][0]),L+pw,T+ph+8);}
+  lab(days[days.length-1]);
+  c.onmousemove=c.ontouchstart=function(e){var r=c.getBoundingClientRect(),cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left,i=Math.round((cx-L)/slot-.5-(n-days.length));if(i>=0&&i<days.length)lab(days[i]);};
+  c.onmouseleave=function(){lab(days[days.length-1]);};}
+S=load();restoreEx();showGame();renderTape();renderMarketList();
 var hh=(location.hash||'').replace('#','');
 if(/^me=[A-Za-z0-9_.]{3,16}$/.test(hh)){try{localStorage.setItem('investeen-lb-me',JSON.stringify({name:hh.slice(3)}));}catch(e){}hh='leaderboard';try{history.replaceState(null,'','#leaderboard');}catch(e){}}
-go(TABS.indexOf(hh)>-1?hh:'home',false);
+var sm=/^stock\/([A-Za-z.]{1,8})$/.exec(decodeURIComponent(hh));if(sm){STOCK.sym=sm[1].toUpperCase();go('stock',false);}else go(TABS.indexOf(hh)>-1&&hh!=='stock'?hh:'home',false);
 refreshQuotes();refreshNews();
 })();
 </script>
