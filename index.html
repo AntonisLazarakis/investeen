@@ -233,6 +233,13 @@ section[role="tabpanel"]{padding-bottom:40px}
 .lb-form .radios{display:flex;gap:8px;flex-wrap:wrap}
 .lb-form .radios label{display:flex;gap:6px;align-items:center;background:var(--sunk);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:700;cursor:pointer}
 .lb-form .chk.opt{color:var(--muted)}
+.i{width:1.15em;height:1.15em;vertical-align:-0.2em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+h2 .i,h3 .i{width:1em;height:1em;vertical-align:-0.12em}
+.badge .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;margin-bottom:6px;background:#0B1F3A;color:#FFFFFF}
+.badge.off .ic{background:var(--line);color:var(--muted)}
+.badge .ic .i{width:28px;height:28px}
+.checks li .ic .i{width:16px;height:16px}
+#btoast{display:flex;align-items:center;gap:8px}
 .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:var(--sunk);border-radius:16px;padding:14px 16px;text-align:center}
 .vs b{display:block;font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-0.02em;line-height:1.1}
 .vs small{display:block;color:var(--muted);font-size:13px;font-weight:700;overflow-wrap:anywhere}
@@ -253,11 +260,11 @@ section[role="tabpanel"]{padding-bottom:40px}
 .badge b{font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:-0.01em;line-height:1.15}
 .badge small{color:var(--muted);font-size:13px;line-height:1.35}
 .badge.on{border-color:var(--lime);background:var(--surface)}
-.badge.off .ic{filter:grayscale(1);opacity:.35}
+.badge.off .ic{filter:grayscale(1);opacity:.7}
 .badge.off b{color:var(--muted)}
 .e-badges{display:flex;gap:6px;flex-wrap:wrap}
-.e-badges span{background:var(--lime);color:var(--on-lime);font-weight:800;font-size:14px;padding:6px 12px;border-radius:999px}
-#btoast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:#C6F432;color:#0B1F3A;padding:10px 18px;font-size:15px;width:max-content;border-radius:999px;font-weight:800;z-index:40;box-shadow:0 6px 24px rgba(11,31,58,.25);max-width:calc(100% - 32px);text-align:center}
+.e-badges span{display:inline-flex;align-items:center;gap:6px;background:#0B1F3A;color:#fff;font-weight:800;font-size:14px;padding:6px 12px;border-radius:999px}
+#btoast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:#0B1F3A;color:#fff;border:2px solid #C6F432;padding:10px 18px;font-size:15px;width:max-content;border-radius:999px;font-weight:800;z-index:40;box-shadow:0 6px 24px rgba(11,31,58,.25);max-width:calc(100% - 32px);text-align:center}
 .lessons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
 .lesson{text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:18px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
 .lesson:hover{border-color:var(--ink)}
@@ -420,6 +427,29 @@ footer strong{color:var(--ink)}
 
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 3.5h10v5.5a5 5 0 0 1-10 0z" fill="#C6F432"/><path d="M7 5.5H4v1.5a3.5 3.5 0 0 0 3.5 3.5M17 5.5h3v1.5a3.5 3.5 0 0 1-3.5 3.5M12 14v3.5M8 20.5h8M9.5 17.5h5v3h-5z"/></symbol>
+<symbol id="i-medal" viewBox="0 0 24 24"><path d="M8 2.5l3 7M16 2.5l-3 7"/><circle cx="12" cy="15" r="6" fill="#C6F432"/><path d="M12 12.2l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2-1.45-1.4 2-.3z" fill="currentColor" stroke-width="1"/></symbol>
+<symbol id="i-gold" viewBox="0 0 24 24"><path d="M8 2.5l3 7M16 2.5l-3 7"/><circle cx="12" cy="15" r="6" fill="#C6F432"/><path d="M10.8 13.2L12.4 12v6"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M3.5 8.5a2 2 0 0 1 2-2h2.2l1.5-2.5h5.6l1.5 2.5h2.2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.8" r="3.6" fill="#C6F432"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="11" cy="13" r="8"/><circle cx="11" cy="13" r="4.5"/><circle cx="11" cy="13" r="1.6" fill="#C6F432"/><path d="M11 13l8.5-8.5M16.5 4.5h3v3"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><rect x="4" y="15" width="4" height="5.5" rx="1" fill="#C6F432"/><rect x="10" y="11.5" width="4" height="9" rx="1" fill="#C6F432"/><rect x="16" y="8" width="4" height="12.5" rx="1" fill="#C6F432"/><path d="M3.5 11l5-3.5 3.5 1.5 7.5-6M15.5 3h4v4"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M3.5 4.5v16h17"/><path d="M7 8l4 4 3-2.5 5.5 6M15.5 15.5h4v-4"/></symbol>
+<symbol id="i-flat" viewBox="0 0 24 24"><path d="M3.5 4.5v16h17"/><path d="M7 13.5c2-2.5 4 2.5 6 0s4 2.5 6.5 0"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#C6F432"/><path d="M8 12.3l2.7 2.7L16.2 9.4"/></symbol>
+<symbol id="i-cross" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+<symbol id="i-cart" viewBox="0 0 24 24"><path d="M6.2 7h14l-1.7 7.2a1.5 1.5 0 0 1-1.5 1.1H8.6a1.5 1.5 0 0 1-1.5-1.2z" fill="#C6F432"/><path d="M2.5 3.5h2.6L8 15.3"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></symbol>
+<symbol id="i-buoy" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3.5v5M12 15.5v5M3.5 12h5M15.5 12h5" stroke="#C6F432" stroke-width="3.2"/><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/></symbol>
+<symbol id="i-pie" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M14.5 2.8A9 9 0 0 1 21.2 9.5h-6.7z" fill="#C6F432"/><path d="M12 12L5.8 18.5"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V3.5"/><path d="M5 4h12.5l-2.5 4 2.5 4H5" fill="#C6F432"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2.8l7.5 3v5.6c0 4.8-3.2 8.4-7.5 9.8-4.3-1.4-7.5-5-7.5-9.8V5.8z" fill="#C6F432"/><path d="M8.5 13.5l3.5-3.5 3.5 3.5M12 10v6.5"/></symbol>
+<symbol id="i-rocket" viewBox="0 0 24 24"><path d="M9.5 17.5l-2.8 3.2-.2-4.2M14.5 17.5l2.8 3.2.2-4.2" fill="#C6F432"/><path d="M12 2.5c3.3 2.6 4.6 6.5 3.9 11.2l-1.4 3.8h-5l-1.4-3.8C7.4 9 8.7 5.1 12 2.5z"/><circle cx="12" cy="9.5" r="2" fill="#C6F432"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24"><path d="M12 2.8a6.3 6.3 0 0 0-3.8 11.3c.8.6 1.3 1.4 1.3 2.4h5c0-1 .5-1.8 1.3-2.4A6.3 6.3 0 0 0 12 2.8z" fill="#C6F432"/><path d="M9.5 19.2h5M10.5 21.5h3"/></symbol>
+<symbol id="i-cap" viewBox="0 0 24 24"><path d="M2 9.5L12 4.5l10 5-10 5z" fill="#C6F432"/><path d="M6.5 11.8v4.5c1.5 1.6 3.4 2.3 5.5 2.3s4-.7 5.5-2.3v-4.5M21.5 9.7v5.3"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2.5l2.1 6.4 6.4 2.1-6.4 2.1L12 19.5l-2.1-6.4L3.5 11l6.4-2.1z" fill="#C6F432"/><path d="M19 17v4M17 19h4"/></symbol>
+<symbol id="i-tick" viewBox="0 0 24 24"><path d="M6 12.5l4 4L18 8" stroke-width="3"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+</svg>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="logo" viewBox="0 0 200 200">
     <circle cx="100" cy="100" r="100" fill="#0B1F3A"/>
@@ -620,7 +650,7 @@ footer strong{color:var(--ink)}
       <div><h3>3. Follow the news</h3><p>Read real headlines and see how they move the investments you own.</p></div>
     </div>
     <div class="panel" style="margin-top:32px">
-      <div class="panel-head"><h2>🏆 Monthly leaderboard</h2><span class="label" id="sb-sub">Simulate the future</span></div>
+      <div class="panel-head"><h2><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> Monthly leaderboard</h2><span class="label" id="sb-sub">Simulate the future</span></div>
       <p class="lb-note" style="margin:6px 0 12px">Finish a 3-year "Simulate the future" game, enter with a username, and climb the ranks. The top player each month wins a prize. <a href="/rules.html">Contest rules</a></p>
       <div id="setup-board"></div>
     </div>
@@ -652,7 +682,7 @@ footer strong{color:var(--ink)}
         </div>
         <div class="game-actions">
           <button class="btn" type="button" id="restart">Restart</button>
-          <button class="btn btn-lime" type="button" id="next" hidden>Next quarter ▶</button>
+          <button class="btn btn-lime" type="button" id="next" hidden>Next quarter <svg class="i" aria-hidden="true"><use href="#i-play"/></svg></button>
         </div>
       </div>
       <p class="offline-note" id="g-vs" hidden></p>
@@ -702,7 +732,7 @@ footer strong{color:var(--ink)}
 
       <div class="gview" id="v-board" hidden>
         <div class="panel">
-          <div class="panel-head"><h2>🏆 Monthly leaderboard</h2><span class="label" id="gb-sub"></span></div>
+          <div class="panel-head"><h2><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> Monthly leaderboard</h2><span class="label" id="gb-sub"></span></div>
           <p class="lb-note" style="margin:6px 0 12px">Ranked by return after 3 simulated years. Finish a "Simulate the future" game to enter. The top player each month wins a prize. <a href="/rules.html">Contest rules</a></p>
           <div id="game-board"></div>
         </div>
@@ -727,7 +757,7 @@ footer strong{color:var(--ink)}
           </div>
         </div>
         <div class="panel" style="margin-top:16px">
-          <div class="panel-head"><h2>🏅 Your badges</h2><span class="label" id="gbd-sub"></span></div>
+          <div class="panel-head"><h2><svg class="i" aria-hidden="true"><use href="#i-medal"/></svg> Your badges</h2><span class="label" id="gbd-sub"></span></div>
           <div class="badges" id="g-badges"></div>
         </div>
       </div>
@@ -745,7 +775,7 @@ footer strong{color:var(--ink)}
       <p>Players are ranked by how much their $100,000 grew after 3 simulated years. The top player each month wins a prize.</p>
     </div>
     <div class="panel" style="margin-top:24px">
-      <div class="panel-head"><h2>🏆 This month</h2><span class="label" id="pb-sub">Loading…</span></div>
+      <div class="panel-head"><h2><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> This month</h2><span class="label" id="pb-sub">Loading…</span></div>
       <div id="page-board" style="margin-top:12px"></div>
     </div>
     <div class="ctas" style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
@@ -765,7 +795,7 @@ footer strong{color:var(--ink)}
     <div class="panel-head"><h2 style="font-size:28px">Quick lessons</h2><span class="label" id="ls-sub"></span></div>
     <div class="lessons" id="lessons"></div>
     <div class="panel" style="margin-top:24px">
-      <div class="panel-head"><h2>🏅 Your badges</h2><span class="label" id="lbd-sub"></span></div>
+      <div class="panel-head"><h2><svg class="i" aria-hidden="true"><use href="#i-medal"/></svg> Your badges</h2><span class="label" id="lbd-sub"></span></div>
       <div class="badges" id="l-badges"></div>
     </div>
     <div class="panel-head" style="margin-top:40px"><h2 style="font-size:28px">Words that make the news make sense</h2></div>
@@ -888,8 +918,8 @@ footer strong{color:var(--ink)}
     <p id="e-lesson" style="color:var(--muted)"></p>
     <div class="e-badges" id="e-badges" hidden></div>
     <div class="share-row">
-      <button class="btn btn-big" type="button" id="e-card">📸 Share my result</button>
-      <button class="btn btn-big" type="button" id="e-chal">🎯 Challenge a friend</button>
+      <button class="btn btn-big" type="button" id="e-card"><svg class="i" aria-hidden="true"><use href="#i-camera"/></svg> Share my result</button>
+      <button class="btn btn-big" type="button" id="e-chal"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg> Challenge a friend</button>
     </div>
     <div class="chal-box" id="chal-box" hidden>
       <label class="label" for="chal-name">Your name on the challenge (optional)</label>
@@ -898,7 +928,7 @@ footer strong{color:var(--ink)}
       <p class="lb-note" id="chal-msg" style="margin:0">Your friend plays the exact same 3-year market you just played and sees your score to beat.</p>
     </div>
     <form class="lb-form" id="lb-form" hidden novalidate onsubmit="return false">
-      <h3 style="font-size:20px">🏆 Enter this month's leaderboard</h3>
+      <h3 style="font-size:20px"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> Enter this month's leaderboard</h3>
       <p class="lb-note">Your username is shown publicly. Your email stays private and is only used to contact you if you win.</p>
       <input type="text" id="lb-name" placeholder="Username (3–16 letters or numbers)" maxlength="16" autocomplete="nickname" aria-label="Username">
       <input type="email" id="lb-email" placeholder="Email" maxlength="254" autocomplete="email" aria-label="Email">
@@ -926,6 +956,8 @@ footer strong{color:var(--ink)}
 'use strict';
 var API='/api';
 function $(id){return document.getElementById(id);}
+function ico(n,cls){var NS='http://www.w3.org/2000/svg',s=document.createElementNS(NS,'svg'),u=document.createElementNS(NS,'use');s.setAttribute('class','i'+(cls?' '+cls:''));s.setAttribute('aria-hidden','true');u.setAttribute('href','#i-'+n);s.appendChild(u);return s;}
+function withIco(n,txt){var f=document.createDocumentFragment();f.appendChild(ico(n));f.appendChild(document.createTextNode(' '+txt));return f;}
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 
 /* ================= TABS ================= */
@@ -1170,7 +1202,7 @@ function openReader(n){
   if(!tops.length){tb.appendChild(el('span',null,'General news'));ex.appendChild(el('p',null,GENERAL));}
   tops.forEach(function(t,i){tb.appendChild(el('span',null,t.k));var p=el('p',null,t.t);if(i)p.style.marginTop='10px';ex.appendChild(p);});
   var m=newsMood(n),mood=$('r-mood');
-  mood.textContent=m>0?'\u{1F4C8} Headline mood: mostly positive. Good-news stories like this tend to lift the stocks involved.':m<0?'\u{1F4C9} Headline mood: worrying. News like this can make investors sell, at least for a while.':'➖ Headline mood: neutral or mixed. The market may not react much unless more news follows.';
+  mood.textContent='';mood.appendChild(m>0?withIco('up','Headline mood: mostly positive. Good-news stories like this tend to lift the stocks involved.'):m<0?withIco('down','Headline mood: worrying. News like this can make investors sell, at least for a while.'):withIco('flat','Headline mood: neutral or mixed. The market may not react much unless more news follows.'));
   var watch=[],seen={};
   (n.related||'').split(',').map(function(s){return s.trim().toUpperCase();}).forEach(function(s){if(A[s]&&!seen[s]){seen[s]=1;watch.push([s,'Mentioned in this story']);}});
   tops.forEach(function(t){t.w.forEach(function(w){if(A[w[0]]&&!seen[w[0]]){seen[w[0]]=1;watch.push(w);}});});
@@ -1284,12 +1316,12 @@ function setView(v){
   if(v==='trade'){if(detailSym)renderDetail(detailSym);else renderTradeList();}
   if(v==='news')renderGameNews();
   if(v==='goals'){drawChecks($('gl-checks'),goals(mix(S.hold,S.cash)));renderBadges($('g-badges'),$('gbd-sub'));}
-  var gv=$('g-vs');if(S.vs){gv.hidden=false;gv.textContent='🎯 Challenge: '+(S.vs.name||'Your friend')+' turned $100,000 into '+usd0.format(S.vs.worth)+' ('+pct(S.vs.ret,1)+') in this exact market. Beat it! Challenge games don\u2019t count for the leaderboard.';}else gv.hidden=true;
+  var gv=$('g-vs');if(S.vs){gv.hidden=false;gv.textContent='';gv.appendChild(withIco('target','Challenge: '+(S.vs.name||'Your friend')+' turned $100,000 into '+usd0.format(S.vs.worth)+' ('+pct(S.vs.ret,1)+') in this exact market. Beat it! Challenge games don\u2019t count for the leaderboard.'));}else gv.hidden=true;
   if(v==='board')renderBoard($('game-board'),$('gb-sub'));
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-view]');if(b&&S){if(b.dataset.view==='trade')detailSym=null;setView(b.dataset.view);}});
 function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
-function drawChecks(ul,list){ul.innerHTML='';list.forEach(function(c){var li=el('li',c.ok?'ok':'bad'),ic=el('span','ic',c.ok?'✓':'•');ic.setAttribute('aria-hidden','true');
+function drawChecks(ul,list){ul.innerHTML='';list.forEach(function(c){var li=el('li',c.ok?'ok':'bad'),ic=el('span','ic',c.ok?null:'•');if(c.ok)ic.appendChild(ico('tick'));ic.setAttribute('aria-hidden','true');
   var tx=el('div');tx.appendChild(el('span',null,(c.ok?'Done: ':'Goal: ')+c.t));tx.appendChild(el('small',null,c.s));li.appendChild(ic);li.appendChild(tx);ul.appendChild(li);});}
 function renderPortfolio(){
   var w=worth(),m=mix(S.hold,S.cash),t=today();
@@ -1650,29 +1682,29 @@ new MutationObserver(function(){if(S&&view==='portfolio')renderPortfolio();}).ob
 
 /* ================= BADGES ================= */
 var BADGES=[
- ['first','🛒','First trade','Make your first trade.'],
- ['bonds','🛟','Safety net','Own a bond fund.'],
- ['diverse','🧺','Diversified','Own 5+ investments across stocks, funds and bonds.'],
- ['finish','🏁','Three-year investor','Finish a "Simulate the future" game.'],
- ['spy','📈','Beat the S&P 500','Finish a game ahead of the all-in S&P 500 fund.'],
- ['crash','💪','Survived a crash','Lose 10%+ in one quarter and still finish ahead.'],
- ['double','🚀','Doubled it','Finish a game at +100% or more.'],
- ['board','🏆','On the board','Enter the monthly leaderboard.'],
- ['challenger','🎯','Challenger','Send a friend a challenge.'],
- ['winner','🥇','Challenge winner','Beat a friend’s score in a challenge.'],
- ['perfect','🧠','Perfect quiz','Get every answer right in a lesson quiz.'],
- ['scholar','🎓','Scholar','Finish all 6 lessons.']];
+ ['first','cart','First trade','Make your first trade.'],
+ ['bonds','buoy','Safety net','Own a bond fund.'],
+ ['diverse','pie','Diversified','Own 5+ investments across stocks, funds and bonds.'],
+ ['finish','flag','Three-year investor','Finish a "Simulate the future" game.'],
+ ['spy','up','Beat the S&P 500','Finish a game ahead of the all-in S&P 500 fund.'],
+ ['crash','shield','Survived a crash','Lose 10%+ in one quarter and still finish ahead.'],
+ ['double','rocket','Doubled it','Finish a game at +100% or more.'],
+ ['board','trophy','On the board','Enter the monthly leaderboard.'],
+ ['challenger','target','Challenger','Send a friend a challenge.'],
+ ['winner','gold','Challenge winner','Beat a friend’s score in a challenge.'],
+ ['perfect','bulb','Perfect quiz','Get every answer right in a lesson quiz.'],
+ ['scholar','cap','Scholar','Finish all 6 lessons.']];
 var BKEY='investeen-badges';
 function myBadges(){try{return JSON.parse(localStorage.getItem(BKEY)||'{}')||{};}catch(e){return {};}}
 function bInfo(id){for(var i=0;i<BADGES.length;i++)if(BADGES[i][0]===id)return BADGES[i];return null;}
 var toastQ=[],toastOn=false;
-function btoast(t){toastQ.push(t);if(toastOn)return;(function nxt(){var m=toastQ.shift();if(!m){toastOn=false;return;}toastOn=true;
+function btoast(t,icn){toastQ.push([t,icn]);if(toastOn)return;(function nxt(){var m=toastQ.shift();if(!m){toastOn=false;return;}toastOn=true;
   var f=$('btoast');if(!f){f=el('div');f.id='btoast';f.setAttribute('role','status');document.body.appendChild(f);}
-  f.textContent=m;f.hidden=false;setTimeout(function(){f.hidden=true;setTimeout(nxt,250);},2800);})();}
+  f.textContent='';if(m[1])f.appendChild(ico(m[1]));f.appendChild(document.createTextNode(m[0]));f.hidden=false;setTimeout(function(){f.hidden=true;setTimeout(nxt,250);},2800);})();}
 function award(id,quiet){var b=myBadges();if(b[id])return false;b[id]=Date.now();try{localStorage.setItem(BKEY,JSON.stringify(b));}catch(e){}
-  var i=bInfo(id);if(i&&!quiet)btoast(i[1]+' Badge unlocked: '+i[2]);return true;}
+  var i=bInfo(id);if(i&&!quiet)btoast('Badge unlocked: '+i[2],i[1]);return true;}
 function renderBadges(box,sub){if(!box)return;var b=myBadges(),n=0;box.innerHTML='';
-  BADGES.forEach(function(x){var on=!!b[x[0]];if(on)n++;var d=el('div','badge '+(on?'on':'off'));var ic=el('span','ic',x[1]);ic.setAttribute('aria-hidden','true');
+  BADGES.forEach(function(x){var on=!!b[x[0]];if(on)n++;var d=el('div','badge '+(on?'on':'off'));var ic=el('span','ic');ic.appendChild(ico(x[1]));
     d.appendChild(ic);d.appendChild(el('b',null,x[2]));d.appendChild(el('small',null,on?x[3]:'Locked: '+x[3]));box.appendChild(d);});
   if(sub)sub.textContent=n+' of '+BADGES.length+' unlocked';}
 function tradeBadges(){award('first');var cls={},n=0;
@@ -1690,9 +1722,9 @@ function endExtras(r,br){END={r:r,br:br,w:worth()};
     me.appendChild(el('small',null,'You'));var mb=el('b',null,pct(r,1));mb.style.color=r>=0?'var(--gain)':'var(--loss)';me.appendChild(mb);
     fr.appendChild(el('small',null,S.vs.name||'Your friend'));var fb=el('b',null,pct(S.vs.ret,1));fb.style.color=S.vs.ret>=0?'var(--gain)':'var(--loss)';fr.appendChild(fb);
     var win=Math.round(r*10000)/10000>S.vs.ret,tie=Math.round(r*10000)/10000===S.vs.ret;
-    var res=el('div','res',win?'You won the challenge! 🥇':tie?'It’s a tie!':(S.vs.name||'Your friend')+' wins this time. Play again?');
+    var res=el('div','res');res.appendChild(win?withIco('gold','You won the challenge!'):document.createTextNode(tie?'It’s a tie!':(S.vs.name||'Your friend')+' wins this time. Play again?'));
     vs.appendChild(me);vs.appendChild(mid);vs.appendChild(fr);vs.appendChild(res);if(win)a('winner');}
-  var eb=$('e-badges');eb.innerHTML='';eb.hidden=!got.length;got.forEach(function(id){var i=bInfo(id);eb.appendChild(el('span',null,i[1]+' '+i[2]));});
+  var eb=$('e-badges');eb.innerHTML='';eb.hidden=!got.length;got.forEach(function(id){var i=bInfo(id);var sp=el('span');sp.appendChild(withIco(i[1],i[2]));eb.appendChild(sp);});
   $('e-chal').hidden=!S.srv;$('chal-box').hidden=true;$('chal-go').disabled=false;$('chal-go').textContent='Get my challenge link';
   $('chal-msg').textContent='Your friend plays the exact same 3-year market you just played and sees your score to beat.';
   try{var m=JSON.parse(localStorage.getItem('investeen-lb-me')||'null');if(m&&m.name&&!$('chal-name').value)$('chal-name').value=m.name;}catch(e){}}
@@ -1755,7 +1787,7 @@ $('chal-go').addEventListener('click',function(){var b=this,nm=$('chal-name').va
   }).catch(function(e){b.disabled=false;b.textContent='Get my challenge link';msg.textContent=e.message||'Couldn’t make a link. Try again.';});});
 function endChallengeLink(){CH=null;$('chal-wrap').hidden=true;try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}}
 function showChallenge(){var bn=$('chal-banner');bn.innerHTML='';var p=el('p');
-  p.appendChild(document.createTextNode('🎯 '+(CH.name||'A friend')+' challenged you! They turned $100,000 into '));p.appendChild(el('b',null,usd0.format(CH.worth)+' ('+pct(CH.ret,1)+')'));
+  p.appendChild(withIco('target',(CH.name||'A friend')+' challenged you! They turned $100,000 into '));p.appendChild(el('b',null,usd0.format(CH.worth)+' ('+pct(CH.ret,1)+')'));
   p.appendChild(document.createTextNode(' in a 3-year simulated market. Play the exact same market and try to beat them.'));
   p.appendChild(el('small',null,S?'Starting the challenge replaces the game you’re playing now. Challenge games are just for fun and don’t enter the leaderboard.':'Challenge games are just for fun and don’t enter the leaderboard.'));
   var go1=el('button','btn btn-lime btn-big','Start the challenge');go1.type='button';
@@ -1823,7 +1855,7 @@ function myLessons(){try{return JSON.parse(localStorage.getItem(LKEY)||'{}')||{}
 function renderLessons(){var box=$('lessons');if(!box)return;var done=myLessons(),n=0;box.innerHTML='';
   LESSONS.forEach(function(L,i){var d=done[L.id];if(d)n++;var b=el('button','lesson'+(d?' done':''));b.type='button';
     b.appendChild(el('span','n','Lesson '+(i+1)));b.appendChild(el('b',null,L.t));b.appendChild(el('span',null,L.d));
-    b.appendChild(el('span','st',d?'✓ Done · best quiz score '+d.best+'/3':'2 min · 3 questions'));b.addEventListener('click',function(){openLesson(i);});box.appendChild(b);});
+    var st=el('span','st');st.appendChild(d?withIco('check','Done · best quiz score '+d.best+'/3'):document.createTextNode('2 min · 3 questions'));b.appendChild(st);b.addEventListener('click',function(){openLesson(i);});box.appendChild(b);});
   $('ls-sub').textContent=n+' of '+LESSONS.length+' done';}
 var CUR=null;
 function openLesson(i){var L=LESSONS[i];CUR=i;$('ls-eyebrow').textContent='Lesson '+(i+1)+' of '+LESSONS.length;$('ls-title').textContent=L.t;
@@ -1842,9 +1874,9 @@ $('ls-check').addEventListener('click',function(){if(CUR==null)return;var L=LESS
   if(miss){$('ls-score').textContent='Answer all 3 questions first.';return;}
   L.q.forEach(function(q,qi){var c=qz.querySelector('input[name=lq'+qi+']:checked'),ok=+c.value===q[2];if(ok)sc++;
     Array.prototype.forEach.call(qz.querySelectorAll('input[name=lq'+qi+']'),function(inp){inp.disabled=true;var lb=inp.parentNode;if(+inp.value===q[2])lb.classList.add('right');else if(inp===c)lb.classList.add('wrong');});
-    var why=qz.querySelectorAll('.qq')[qi].querySelector('.why');why.hidden=false;why.textContent=(ok?'✓ Right. ':'✗ Not quite. ')+q[3];});
+    var why=qz.querySelectorAll('.qq')[qi].querySelector('.why');why.hidden=false;why.textContent='';why.appendChild(withIco(ok?'check':'cross',(ok?'Right. ':'Not quite. ')+q[3]));});
   var d=myLessons(),prev=d[L.id];d[L.id]={best:Math.max(sc,prev?prev.best:0),at:Date.now()};try{localStorage.setItem(LKEY,JSON.stringify(d));}catch(e){}
-  $('ls-score').textContent='You got '+sc+' of 3'+(sc===3?'. Perfect! 🎉':'. Read the notes above, then try again if you like.');
+  var lsc=$('ls-score');lsc.textContent='';lsc.appendChild(sc===3?withIco('spark','You got 3 of 3. Perfect!'):document.createTextNode('You got '+sc+' of 3. Read the notes above, then try again if you like.'));
   this.textContent=sc===3?'Try again':'Try again';
   if(sc===3)award('perfect');if(LESSONS.every(function(x){return d[x.id];}))award('scholar');renderLessons();renderBadges($('l-badges'),$('lbd-sub'));});
 $('ls-sim').addEventListener('click',function(){closeModal('m-lesson');go('simulator',true);});
