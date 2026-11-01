@@ -8,7 +8,7 @@
 // The market for each quarter is only generated after that quarter's trades are locked in,
 // so nobody can see the future before trading, and scores can't be edited in the browser.
 import { getStore } from '@netlify/blobs';
-import { START, NQ, LIST, A, simQuarter, applyTrades, dividends, worthOf, extraAsset, extraHistory } from '../lib/market.mjs';
+import { START, NQ, LIST, LIST2, A, ALL, simQuarter, applyTrades, dividends, worthOf, extraAsset, extraHistory } from '../lib/market.mjs';
 import { assetInfo, quote, pub, SYM_RE } from '../lib/assets.mjs';
 const MAX_EXTRA = 30;
 const exObjs = (g) => { const o = {}; Object.keys(g.ex || {}).forEach((k) => { o[k] = extraAsset(g.ex[k]); }); return o; };
@@ -21,12 +21,12 @@ const nyDay = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_Yo
 
 async function startPrices(req) {
   const p0 = {};
-  LIST.forEach((o) => { p0[o.sym] = o.p0; });
+  LIST.concat(LIST2).forEach((o) => { p0[o.sym] = o.p0; });
   try {
     const r = await fetch(new URL('/api/quotes', req.url), { signal: AbortSignal.timeout(4000) });
     if (r.ok) {
       const j = await r.json();
-      LIST.forEach((o) => { const q = j.quotes && j.quotes[o.sym]; if (q && q.c > 0) p0[o.sym] = q.c; });
+      LIST.concat(LIST2).forEach((o) => { const q = j.quotes && j.quotes[o.sym]; if (q && q.c > 0) p0[o.sym] = q.c; });
     }
   } catch (e) { /* use fallback prices */ }
   return p0;
@@ -57,10 +57,11 @@ export default async (req) => {
     }
     const seed = c ? c.seed : crypto.getRandomValues(new Uint32Array(1))[0];
     const p0 = c ? c.p0 : await startPrices(req);
-    const g = { id, seed, created: Date.now(), d0: c ? c.d0 : nyDay(), q: 0, cash: START, hold: {}, p0, last: p0, div: 0, done: false };
+    const v = c ? (c.v || 1) : 2;
+    const g = { id, seed, v, created: Date.now(), d0: c ? c.d0 : nyDay(), q: 0, cash: START, hold: {}, p0, last: { ...p0 }, div: 0, done: false };
     if (c) { g.challenge = c.code; if (c.exP0) g.exP0 = c.exP0; }
     await games.setJSON(id, g);
-    const out = { id, p0, d0: g.d0 };
+    const out = { id, p0, d0: g.d0, v: g.v };
     if (c) out.vs = { code: c.code, name: c.name || null, ret: c.ret, worth: c.worth };
     return json(out);
   }
@@ -71,7 +72,7 @@ export default async (req) => {
     const g = await games.get(body.id, { type: 'json' });
     if (!g) return json({ error: 'Game not found' }, 404);
     if (g.done) return json({ error: 'This game is finished.' }, 409);
-    if (A[s]) return json({ core: true });
+    if (A[s] || (g.v >= 2 && ALL[s])) return json({ core: true });
     g.ex = g.ex || {};
     if (!g.ex[s] && Object.keys(g.ex).length >= MAX_EXTRA) return json({ error: 'You can add up to ' + MAX_EXTRA + ' extra investments in one game.' }, 400);
     let m = g.ex[s];
@@ -91,7 +92,7 @@ export default async (req) => {
     fresh.ex = fresh.ex || {};
     if (!fresh.ex[s]) fresh.ex[s] = m;
     m = fresh.ex[s];
-    const pathArr = extraHistory(fresh.seed, fresh.q, extraAsset(m), m.p0);
+    const pathArr = extraHistory(fresh.seed, fresh.q, extraAsset(m), m.p0, fresh.v);
     if (fresh.last[s] == null || !fresh.hold[s]) fresh.last[s] = pathArr[pathArr.length - 1];
     await games.setJSON(fresh.id, fresh);
     const { p0, ...asset } = m;
@@ -106,7 +107,7 @@ export default async (req) => {
     const code = g.chal || newCode();
     const ret = Math.round((g.finalWorth / START - 1) * 10000) / 10000;
     const exP0 = {}; Object.keys(g.ex || {}).forEach((k) => { exP0[k] = g.ex[k].p0; }); Object.assign(exP0, g.exP0 || {});
-    await chals.setJSON(code, { seed: g.seed, p0: g.p0, d0: g.d0, exP0, ret, worth: g.finalWorth, name, game: g.id, created: Date.now() });
+    await chals.setJSON(code, { seed: g.seed, v: g.v || 1, p0: g.p0, d0: g.d0, exP0, ret, worth: g.finalWorth, name, game: g.id, created: Date.now() });
     if (!g.chal) { g.chal = code; await games.setJSON(g.id, g); }
     return json({ code, name, ret });
   }
@@ -119,7 +120,7 @@ export default async (req) => {
     if (body.q === g.q - 1 && g.lastRes) return json(g.lastRes);
     if (g.done || body.q !== g.q) return json({ error: 'This game is out of sync. Start a new game to enter the leaderboard.' }, 409);
     try { applyTrades(g, body.trades || [], g.last); } catch (e) { return json({ error: e.message }, 400); }
-    const r = simQuarter(g.seed, g.q, g.last, exObjs(g));
+    const r = simQuarter(g.seed, g.q, g.last, exObjs(g), g.v);
     const div = dividends(g.hold, r.last, g.ex);
     g.cash = Math.round((g.cash + div) * 100) / 100;
     g.div = Math.round((g.div + div) * 100) / 100;
