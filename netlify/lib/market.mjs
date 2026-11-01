@@ -109,7 +109,7 @@ function gx(r){var u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Mat
 export function extraAsset(m){
   var cls=m.cls==='bond'?'bond':m.cls==='fund'?'fund':'stock',o={cls:cls,sym:m.sym,name:m.name,sec:m.sec||'',sk:m.sk||'',yld:Math.min(.12,Math.max(0,+m.yld||0))};
   o.sig=Math.min(cls==='stock'?.8:.6,Math.max(cls==='bond'?.03:.1,+m.sig||(cls==='bond'?.07:cls==='fund'?.2:.35)));
-  if(cls==='bond'){o.a=.1;o.b=.85;o.dur=/long|20\+|25\+/i.test(o.name)?15:/short|0-|1-3|t-bill/i.test(o.name)?2:6;}
+  if(cls==='bond'){o.a=.1;o.b=.85;o.dur=/long|20\+|25\+/i.test(o.name)?15:/short|0-|1-3|t-bill/i.test(o.name)?2:6;o.sig=o.dur>10?.14:o.dur<3?.03:.06;}
   else if(cls==='fund'){o.a=.85;o.b=o.sk?.3:0;}else{o.a=.55;o.b=o.sk?.35:0;}
   o.c=Math.sqrt(Math.max(0,1-o.a*o.a-o.b*o.b));o.mu=cls==='bond'?.045:.085;return o;}
 var BASE={};RAW.forEach(function(r){BASE[r[1]]=r[3];});
