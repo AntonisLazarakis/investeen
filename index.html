@@ -232,6 +232,52 @@ section[role="tabpanel"]{padding-bottom:40px}
 .lb-form .chk input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:#2F6FE4}
 .lb-form .radios{display:flex;gap:8px;flex-wrap:wrap}
 .lb-form .radios label{display:flex;gap:6px;align-items:center;background:var(--sunk);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.lb-form .chk.opt{color:var(--muted)}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:var(--sunk);border-radius:16px;padding:14px 16px;text-align:center}
+.vs b{display:block;font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-0.02em;line-height:1.1}
+.vs small{display:block;color:var(--muted);font-size:13px;font-weight:700;overflow-wrap:anywhere}
+.vs .mid{font-family:var(--display);font-weight:800;color:var(--muted)}
+.vs .res{grid-column:1/-1;font-weight:800;font-size:17px}
+.share-row{display:flex;gap:8px;flex-wrap:wrap}.share-row .btn{flex:1;min-width:180px}
+.chal-box{display:flex;flex-direction:column;gap:8px;background:var(--sunk);border-radius:16px;padding:14px}
+.chal-box input{width:100%;min-height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);padding:0 12px;font:inherit;font-size:16px}
+.chal-box .row{display:flex;gap:8px;flex-wrap:wrap}.chal-box .row .btn{flex:1}
+.chal-banner{margin-top:20px;background:var(--navy);color:var(--on-navy);border-radius:var(--r-md);padding:18px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.chal-banner p{margin:0;flex:1;min-width:240px}
+.chal-banner b{color:#C6F432}
+.chal-banner small{display:block;color:var(--navy-muted);margin-top:4px}
+.chal-banner .btn-ghost{background:transparent;color:var(--on-navy);border:1.5px solid var(--navy-muted)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px}
+.badge{display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:14px;background:var(--sunk);border:1.5px solid transparent}
+.badge .ic{font-size:28px;line-height:1.1}
+.badge b{font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:-0.01em;line-height:1.15}
+.badge small{color:var(--muted);font-size:13px;line-height:1.35}
+.badge.on{border-color:var(--lime);background:var(--surface)}
+.badge.off .ic{filter:grayscale(1);opacity:.35}
+.badge.off b{color:var(--muted)}
+.e-badges{display:flex;gap:6px;flex-wrap:wrap}
+.e-badges span{background:var(--lime);color:var(--on-lime);font-weight:800;font-size:14px;padding:6px 12px;border-radius:999px}
+#btoast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:#C6F432;color:#0B1F3A;padding:10px 18px;font-size:15px;width:max-content;border-radius:999px;font-weight:800;z-index:40;box-shadow:0 6px 24px rgba(11,31,58,.25);max-width:calc(100% - 32px);text-align:center}
+.lessons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.lesson{text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:18px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.lesson:hover{border-color:var(--ink)}
+.lesson .n{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lesson b{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-0.02em;line-height:1.15}
+.lesson span{color:var(--muted);font-size:15px}
+.lesson .st{margin-top:auto;padding-top:6px;font-weight:800;font-size:14px;color:var(--muted)}
+.lesson.done .st{color:var(--lime-text)}
+@media (max-width:900px){.lessons{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.lessons{grid-template-columns:minmax(0,1fr)}}
+.lbody p{margin:0 0 10px}.lbody p:last-child{margin:0}
+.ltry{background:var(--sunk);border-radius:12px;padding:12px 14px;font-size:15px}
+.quiz{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:14px}
+.qq fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.qq legend{font-weight:800;margin-bottom:8px;padding:0}
+.qq label{display:flex;gap:10px;align-items:flex-start;background:var(--sunk);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:15px;border:1.5px solid transparent}
+.qq label input{margin-top:4px;accent-color:#2F6FE4;flex:none}
+.qq label.right{border-color:var(--gain)}
+.qq label.wrong{border-color:var(--loss)}
+.qq .why{font-size:14px;color:var(--muted);margin:6px 0 0}
 .lb-form .err{color:var(--loss);font-weight:700;font-size:14px;margin:0}
 .lb-note{font-size:13px;color:var(--muted);margin:0}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;min-width:0}
@@ -545,6 +591,7 @@ footer strong{color:var(--ink)}
 
 <!-- ================= SIMULATOR ================= -->
 <section id="simulator" role="tabpanel" aria-labelledby="tab-simulator" hidden>
+  <div class="wrap" id="chal-wrap" hidden><div class="chal-banner" id="chal-banner"></div></div>
   <div id="setup" class="wrap setup">
     <p class="label">InvesTeen Simulator</p>
     <h1 style="margin-top:10px">Invest <span class="hl">$100,000</span> in the real market</h1>
@@ -608,6 +655,7 @@ footer strong{color:var(--ink)}
           <button class="btn btn-lime" type="button" id="next" hidden>Next quarter ▶</button>
         </div>
       </div>
+      <p class="offline-note" id="g-vs" hidden></p>
       <p class="offline-note" id="g-offline" hidden>Live prices aren't available here, so the game uses closing prices from 16 Oct 2026. On your InvesTeen website, prices update every minute while the market is open.</p>
 
       <div class="gview" id="v-portfolio">
@@ -678,6 +726,10 @@ footer strong{color:var(--ink)}
             </ul>
           </div>
         </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head"><h2>🏅 Your badges</h2><span class="label" id="gbd-sub"></span></div>
+          <div class="badges" id="g-badges"></div>
+        </div>
       </div>
       <p class="note">Practice money only. Prices are real market prices and may be up to a minute behind. Dividend rates are approximate. Not financial advice.</p>
     </div>
@@ -707,9 +759,17 @@ footer strong{color:var(--ink)}
   <div class="wrap">
     <div class="learn-head">
       <p class="label">Learn</p>
-      <h1 style="margin-top:12px">Words that make the <span class="hl">news make sense</span></h1>
-      <p>The terms you'll see in our posts, the headlines and the simulator, explained like a friend would.</p>
+      <h1 style="margin-top:12px">Learn how investing <span class="hl">really works</span></h1>
+      <p>Six short lessons, each with a 3-question quiz. Then try the idea for real in the simulator.</p>
     </div>
+    <div class="panel-head"><h2 style="font-size:28px">Quick lessons</h2><span class="label" id="ls-sub"></span></div>
+    <div class="lessons" id="lessons"></div>
+    <div class="panel" style="margin-top:24px">
+      <div class="panel-head"><h2>🏅 Your badges</h2><span class="label" id="lbd-sub"></span></div>
+      <div class="badges" id="l-badges"></div>
+    </div>
+    <div class="panel-head" style="margin-top:40px"><h2 style="font-size:28px">Words that make the news make sense</h2></div>
+    <p style="color:var(--muted);margin:6px 0 16px">The terms you'll see in our posts, the headlines and the simulator, explained like a friend would.</p>
     <dl class="gloss">
       <div class="term"><dt>Stock (share)</dt><dd>A tiny piece of a company. Own one Apple share and you own a very small slice of Apple.</dd></div>
       <div class="term"><dt>Index fund</dt><dd>A fund that buys every company in an index. The <b>S&amp;P 500</b> holds 500 of the biggest US companies at once.</dd></div>
@@ -802,6 +862,21 @@ footer strong{color:var(--ink)}
     <button class="btn btn-lime btn-big" type="button" data-close>Keep investing</button>
   </div>
 </div>
+<div class="overlay" id="m-lesson" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="ls-title">
+    <button class="x" type="button" data-close aria-label="Close">×</button>
+    <span class="label" id="ls-eyebrow">Lesson</span>
+    <h2 id="ls-title"></h2>
+    <div class="lbody" id="ls-body"></div>
+    <div class="ltry" id="ls-try"></div>
+    <form class="quiz" id="ls-quiz" onsubmit="return false"></form>
+    <p class="lb-note" id="ls-score" role="status" style="margin:0;font-weight:800"></p>
+    <div class="share-row">
+      <button class="btn btn-lime btn-big" type="button" id="ls-check">Check my answers</button>
+      <button class="btn btn-big" type="button" id="ls-sim">Try it in the simulator</button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="m-end" hidden>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="e-title">
     <button class="x" type="button" data-close aria-label="Close">×</button>
@@ -809,7 +884,19 @@ footer strong{color:var(--ink)}
     <h2 id="e-title">Your possible future</h2>
     <div class="big num" id="e-worth"></div>
     <dl class="num" id="e-stats"></dl>
+    <div class="vs" id="e-vs" hidden></div>
     <p id="e-lesson" style="color:var(--muted)"></p>
+    <div class="e-badges" id="e-badges" hidden></div>
+    <div class="share-row">
+      <button class="btn btn-big" type="button" id="e-card">📸 Share my result</button>
+      <button class="btn btn-big" type="button" id="e-chal">🎯 Challenge a friend</button>
+    </div>
+    <div class="chal-box" id="chal-box" hidden>
+      <label class="label" for="chal-name">Your name on the challenge (optional)</label>
+      <input type="text" id="chal-name" maxlength="16" placeholder="e.g. Alex_23" autocomplete="nickname">
+      <div class="row"><button class="btn btn-lime" type="button" id="chal-go">Get my challenge link</button></div>
+      <p class="lb-note" id="chal-msg" style="margin:0">Your friend plays the exact same 3-year market you just played and sees your score to beat.</p>
+    </div>
     <form class="lb-form" id="lb-form" hidden novalidate onsubmit="return false">
       <h3 style="font-size:20px">🏆 Enter this month's leaderboard</h3>
       <p class="lb-note">Your username is shown publicly. Your email stays private and is only used to contact you if you win.</p>
@@ -822,6 +909,7 @@ footer strong{color:var(--ink)}
       </div>
       <label class="chk" id="lb-parent-row" hidden><input type="checkbox" id="lb-parent"><span>A parent or guardian knows I'm entering and agrees to my email being used to contact me about a prize.</span></label>
       <label class="chk"><input type="checkbox" id="lb-rules"><span>I accept the <a href="/rules.html" target="_blank" rel="noopener">contest rules</a>, including how my email is stored and used.</span></label>
+      <label class="chk opt"><input type="checkbox" id="lb-updates"><span>Optional: email me InvesTeen updates (new features, monthly winners). Unsubscribe anytime.</span></label>
       <p class="err" id="lb-err" role="alert"></p>
       <button class="btn btn-lime btn-big" type="submit" id="lb-go">Enter the leaderboard</button>
     </form>
@@ -847,6 +935,7 @@ function go(t,push){
   TABS.forEach(function(x){$(x).hidden=x!==t;var tb=$('tab-'+x);if(tb){tb.setAttribute('aria-selected',String(x===t));tb.tabIndex=x===t?0:-1;}});
   if(t==='simulator')requestAnimationFrame(function(){if(S)setView(view);});
   if(t==='leaderboard')renderBoard($('page-board'),$('pb-sub'));
+  if(t==='learn'){renderLessons();renderBadges($('l-badges'),$('lbd-sub'));}
   if(push){try{history.replaceState(null,'','#'+t);}catch(e){}window.scrollTo(0,0);}
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)go(b.dataset.go,true);});
@@ -1153,9 +1242,13 @@ $('level-form').addEventListener('submit',function(){
   function go(g){S=g;save();view='trade';detailSym=null;showGame();}
   if(md!=='future'){go(newGame(v,md));return;}
   var b=$('start');b.disabled=true;b.textContent='Setting up your future…';
-  api('/game/start',{}).then(function(r){
-    var g=newGame(v,md);g.srv=r.id;g.pend=[];g.d0=r.d0||g.d0;LIST.forEach(function(o){var p=r.p0&&r.p0[o.sym];if(p>0)g.P[o.sym]=[p];});go(g);
-  }).catch(function(){var g=newGame(v,md);go(g);flash('Offline game: this one can\u2019t enter the leaderboard.');})
+  var ch=CH;
+  api('/game/start',ch?{challenge:ch.code}:{}).then(function(r){
+    var g=newGame(v,md);g.srv=r.id;g.pend=[];g.d0=r.d0||g.d0;if(r.vs)g.vs=r.vs;LIST.forEach(function(o){var p=r.p0&&r.p0[o.sym];if(p>0)g.P[o.sym]=[p];});
+    if(ch)endChallengeLink();go(g);
+  }).catch(function(e){
+    if(ch&&e&&e.status===404){endChallengeLink();flash('That challenge link has expired, so this is a normal game.');api('/game/start',{}).then(function(r){var g=newGame(v,md);g.srv=r.id;g.pend=[];g.d0=r.d0||g.d0;LIST.forEach(function(o){var p=r.p0&&r.p0[o.sym];if(p>0)g.P[o.sym]=[p];});go(g);}).catch(function(){go(newGame(v,md));});return;}
+    var g=newGame(v,md);go(g);flash('Offline game: this one can\u2019t enter the leaderboard.');})
   .then(function(){b.disabled=false;b.textContent='Start investing';});
 });
 function api(path,body,method){
@@ -1190,7 +1283,8 @@ function setView(v){
   if(v==='portfolio')renderPortfolio();
   if(v==='trade'){if(detailSym)renderDetail(detailSym);else renderTradeList();}
   if(v==='news')renderGameNews();
-  if(v==='goals')drawChecks($('gl-checks'),goals(mix(S.hold,S.cash)));
+  if(v==='goals'){drawChecks($('gl-checks'),goals(mix(S.hold,S.cash)));renderBadges($('g-badges'),$('gbd-sub'));}
+  var gv=$('g-vs');if(S.vs){gv.hidden=false;gv.textContent='🎯 Challenge: '+(S.vs.name||'Your friend')+' turned $100,000 into '+usd0.format(S.vs.worth)+' ('+pct(S.vs.ret,1)+') in this exact market. Beat it! Challenge games don\u2019t count for the leaderboard.';}else gv.hidden=true;
   if(v==='board')renderBoard($('game-board'),$('gb-sub'));
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-view]');if(b&&S){if(b.dataset.view==='trade')detailSym=null;setView(b.dataset.view);}});
@@ -1353,7 +1447,7 @@ $('t-go').addEventListener('click',function(){
   else{if(q>h.qty)return;var avg=h.cost/h.qty;h.cost-=avg*q;h.qty-=q;if(h.tq>h.qty){h.tc=h.tq?h.tc*h.qty/h.tq:0;h.tq=h.qty;}S.cash=Math.round((S.cash+q*p)*100)/100;if(!h.qty)delete S.hold[T.sym];}
   if(h.qty===0&&S.hold[T.sym]&&!S.hold[T.sym].qty)delete S.hold[T.sym];
   if(isF()&&S.srv){(S.pend=S.pend||[]).push({s:T.sym,side:T.side,n:q});}
-  snapshot(true);save();var msg=(T.side==='buy'?'Bought ':'Sold ')+q+' '+T.sym+' for '+usd.format(q*p);
+  snapshot(true);save();tradeBadges();var msg=(T.side==='buy'?'Bought ':'Sold ')+q+' '+T.sym+' for '+usd.format(q*p);
   closeModal('m-trade');renderBar();if(detailSym)renderDetail(detailSym);flash(msg);
 });
 function flash(t){var f=$('flash');if(!f){f=el('div');f.id='flash';f.setAttribute('role','status');f.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:999px;font-weight:700;z-index:30;max-width:calc(100% - 32px)';document.body.appendChild(f);}
@@ -1462,7 +1556,7 @@ function applyQuarter(r){
   S.cash=r.cash;S.div=Math.round((S.div+r.div)*100)/100;S.worth[S.worth.length-1]=worth();
   r.news.forEach(function(e){var d=d0+e.dd;S.news.push({q:q,d:d,kind:e.kind,t:e.t,why:e.why,fx:e.tags.map(function(s){return {s:s,r:S.P[s][d]/S.P[s][d-1]-1};})});});
   S.q++;S.pend=[];var best=null,worst=null;LIST.forEach(function(o){var g=px(o.sym)/p0[o.sym]-1;if(!best||g>best.g)best={s:o.sym,g:g};if(!worst||g<worst.g)worst={s:o.sym,g:g};});
-  if(r.finalWorth)S.final=r.finalWorth;
+  if(r.finalWorth)S.final=r.finalWorth;if(r.vs)S.vs=r.vs;
   var st={q:q,w0:w0,w1:worth(),spy:px('SPY')/spy0-1,div:r.div,best:best,worst:worst};S.qstats.push(st);return st;}
 var busy=false;
 $('next').addEventListener('click',function(){
@@ -1488,11 +1582,12 @@ function showEnd(){
   $('e-worth').textContent=usd.format(w);$('e-worth').className='big num '+(r>=0?'up':'down');
   var dl=$('e-stats');dl.innerHTML='';
   [['Your return over 3 years',pct(r,1)],['All-in S&P 500 fund on day one',pct(br,1)+' ('+usd0.format(b)+')'],['Dividends you collected',usd.format(S.div)]].forEach(function(x){dl.appendChild(el('dt',null,x[0]));dl.appendChild(el('dd',null,x[1]));});
-  setupEntry();
+  setupEntry();endExtras(r,br);
   $('e-lesson').textContent=r>=br?'You beat the simple S&P 500 strategy in this future. Play again to see if your approach keeps working, or if this time was luck.':'The simple S&P 500 strategy beat you in this future. It beats most professional investors too, which is why many people build around index funds.';
   openModal('m-end');}
 function setupEntry(){
   var f=$('lb-form'),dn=$('lb-done');
+  if(S.vs){f.hidden=true;dn.hidden=false;dn.innerHTML='';dn.appendChild(el('p','lb-note','Challenge games replay a friend\u2019s market, so they can\u2019t enter the leaderboard. Start a new "Simulate the future" game to compete for the monthly prize.'));return;}
   if(!S.srv){f.hidden=true;dn.hidden=false;dn.innerHTML='';dn.appendChild(el('p','lb-note','This game was played offline, so it can\u2019t enter the leaderboard. Start a new "Simulate the future" game online to compete.'));return;}
   if(S.lb){f.hidden=true;showEntered(S.lb);return;}
   f.hidden=false;dn.hidden=true;$('lb-err').textContent='';
@@ -1512,8 +1607,8 @@ $('lb-form').addEventListener('submit',function(){
   if(age==='15-17'&&!$('lb-parent').checked){err.textContent='Players under 18 need a parent or guardian to agree.';return;}
   if(!$('lb-rules').checked){err.textContent='Please accept the contest rules.';return;}
   var b=$('lb-go');b.disabled=true;b.textContent='Entering…';err.textContent='';
-  api('/leaderboard',{id:S.srv,name:name,email:email,age:age,parent:$('lb-parent').checked,rules:true}).then(function(r){
-    S.lb=r;save();try{localStorage.setItem('investeen-lb-me',JSON.stringify({name:name,email:email}));}catch(e){}BOARD=null;$('lb-form').hidden=true;showEntered(r);
+  api('/leaderboard',{id:S.srv,name:name,email:email,age:age,parent:$('lb-parent').checked,rules:true,updates:$('lb-updates').checked}).then(function(r){
+    S.lb=r;save();award('board');try{localStorage.setItem('investeen-lb-me',JSON.stringify({name:name,email:email}));}catch(e){}BOARD=null;$('lb-form').hidden=true;showEntered(r);
   }).catch(function(e){err.textContent=e.message||'Something went wrong. Try again.';}).then(function(){b.disabled=false;b.textContent='Enter the leaderboard';});
 });
 
@@ -1552,6 +1647,207 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
 var rz;window.addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){if(S&&!$('simulator').hidden&&(view==='portfolio'||(view==='trade'&&detailSym)))setView(view);},120);});
 try{window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if(S)setView(view);});}catch(e){}
 new MutationObserver(function(){if(S&&view==='portfolio')renderPortfolio();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ================= BADGES ================= */
+var BADGES=[
+ ['first','🛒','First trade','Make your first trade.'],
+ ['bonds','🛟','Safety net','Own a bond fund.'],
+ ['diverse','🧺','Diversified','Own 5+ investments across stocks, funds and bonds.'],
+ ['finish','🏁','Three-year investor','Finish a "Simulate the future" game.'],
+ ['spy','📈','Beat the S&P 500','Finish a game ahead of the all-in S&P 500 fund.'],
+ ['crash','💪','Survived a crash','Lose 10%+ in one quarter and still finish ahead.'],
+ ['double','🚀','Doubled it','Finish a game at +100% or more.'],
+ ['board','🏆','On the board','Enter the monthly leaderboard.'],
+ ['challenger','🎯','Challenger','Send a friend a challenge.'],
+ ['winner','🥇','Challenge winner','Beat a friend’s score in a challenge.'],
+ ['perfect','🧠','Perfect quiz','Get every answer right in a lesson quiz.'],
+ ['scholar','🎓','Scholar','Finish all 6 lessons.']];
+var BKEY='investeen-badges';
+function myBadges(){try{return JSON.parse(localStorage.getItem(BKEY)||'{}')||{};}catch(e){return {};}}
+function bInfo(id){for(var i=0;i<BADGES.length;i++)if(BADGES[i][0]===id)return BADGES[i];return null;}
+var toastQ=[],toastOn=false;
+function btoast(t){toastQ.push(t);if(toastOn)return;(function nxt(){var m=toastQ.shift();if(!m){toastOn=false;return;}toastOn=true;
+  var f=$('btoast');if(!f){f=el('div');f.id='btoast';f.setAttribute('role','status');document.body.appendChild(f);}
+  f.textContent=m;f.hidden=false;setTimeout(function(){f.hidden=true;setTimeout(nxt,250);},2800);})();}
+function award(id,quiet){var b=myBadges();if(b[id])return false;b[id]=Date.now();try{localStorage.setItem(BKEY,JSON.stringify(b));}catch(e){}
+  var i=bInfo(id);if(i&&!quiet)btoast(i[1]+' Badge unlocked: '+i[2]);return true;}
+function renderBadges(box,sub){if(!box)return;var b=myBadges(),n=0;box.innerHTML='';
+  BADGES.forEach(function(x){var on=!!b[x[0]];if(on)n++;var d=el('div','badge '+(on?'on':'off'));var ic=el('span','ic',x[1]);ic.setAttribute('aria-hidden','true');
+    d.appendChild(ic);d.appendChild(el('b',null,x[2]));d.appendChild(el('small',null,on?x[3]:'Locked: '+x[3]));box.appendChild(d);});
+  if(sub)sub.textContent=n+' of '+BADGES.length+' unlocked';}
+function tradeBadges(){award('first');var cls={},n=0;
+  for(var k in S.hold){if(!S.hold[k].qty)continue;n++;var c=A[k].cls;cls[c==='bond'?'bond':c==='stock'?'stock':'fund']=1;}
+  if(cls.bond)award('bonds');if(n>=5&&cls.bond&&cls.stock&&cls.fund)award('diverse');}
+
+/* ================= END-OF-GAME EXTRAS ================= */
+var END={};
+function endExtras(r,br){END={r:r,br:br,w:worth()};
+  var got=[];function a(id){if(award(id,true))got.push(id);}
+  a('finish');if(r>=br)a('spy');if(r>=1)a('double');
+  if(r>0&&(S.qstats||[]).some(function(q){return q.w1/q.w0-1<=-0.10;}))a('crash');
+  var vs=$('e-vs');vs.hidden=!S.vs;vs.innerHTML='';
+  if(S.vs){var me=el('div'),mid=el('div','mid','vs'),fr=el('div');
+    me.appendChild(el('small',null,'You'));var mb=el('b',null,pct(r,1));mb.style.color=r>=0?'var(--gain)':'var(--loss)';me.appendChild(mb);
+    fr.appendChild(el('small',null,S.vs.name||'Your friend'));var fb=el('b',null,pct(S.vs.ret,1));fb.style.color=S.vs.ret>=0?'var(--gain)':'var(--loss)';fr.appendChild(fb);
+    var win=Math.round(r*10000)/10000>S.vs.ret,tie=Math.round(r*10000)/10000===S.vs.ret;
+    var res=el('div','res',win?'You won the challenge! 🥇':tie?'It’s a tie!':(S.vs.name||'Your friend')+' wins this time. Play again?');
+    vs.appendChild(me);vs.appendChild(mid);vs.appendChild(fr);vs.appendChild(res);if(win)a('winner');}
+  var eb=$('e-badges');eb.innerHTML='';eb.hidden=!got.length;got.forEach(function(id){var i=bInfo(id);eb.appendChild(el('span',null,i[1]+' '+i[2]));});
+  $('e-chal').hidden=!S.srv;$('chal-box').hidden=true;$('chal-go').disabled=false;$('chal-go').textContent='Get my challenge link';
+  $('chal-msg').textContent='Your friend plays the exact same 3-year market you just played and sees your score to beat.';
+  try{var m=JSON.parse(localStorage.getItem('investeen-lb-me')||'null');if(m&&m.name&&!$('chal-name').value)$('chal-name').value=m.name;}catch(e){}}
+
+/* ---- Share card (1080x1920 story image) ---- */
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function fitFont(c,txt,max,size,fam,wt){do{c.font=wt+' '+size+'px '+fam;size-=4;}while(c.measureText(txt).width>max&&size>20);}
+function makeCard(){
+  var W=1080,H=1920,cv=document.createElement('canvas');cv.width=W;cv.height=H;var c=cv.getContext('2d');
+  var D=css('--display')||'sans-serif',B=css('--body')||'sans-serif',LIME='#C6F432',NAVY='#0B1F3A',w=END.w||worth(),r=END.r!=null?END.r:w/START-1;
+  c.fillStyle=NAVY;c.fillRect(0,0,W,H);
+  c.fillStyle='#12284A';c.beginPath();c.arc(980,180,420,0,7);c.fill();c.beginPath();c.arc(60,1700,300,0,7);c.fill();
+  // logo
+  c.save();c.translate(80,96);c.scale(.62,.62);c.translate(-38,-38);c.fillStyle=LIME;[[50,126,30],[86,106,50],[122,82,74]].forEach(function(b){rr(c,b[0],b[1],26,b[2],5);c.fill();});
+  c.strokeStyle='#fff';c.lineWidth=9;c.lineCap='round';c.lineJoin='round';c.beginPath();c.moveTo(46,100);c.lineTo(80,78);c.lineTo(104,88);c.lineTo(146,48);c.stroke();c.beginPath();c.moveTo(124,46);c.lineTo(148,46);c.lineTo(148,70);c.stroke();c.restore();
+  c.font='800 46px '+D;c.textBaseline='alphabetic';c.fillStyle='#fff';c.fillText('Inves',172,150);var iw=c.measureText('Inves').width;
+  var tw=c.measureText('Teen').width;c.fillStyle=LIME;rr(c,172+iw+4,108,tw+20,56,12);c.fill();c.fillStyle=NAVY;c.fillText('Teen',172+iw+14,150);
+  // headline
+  c.fillStyle='#fff';c.font='700 64px '+B;c.fillText('I turned $100,000 into',80,420);
+  var big=usd0.format(w);c.fillStyle=LIME;fitFont(c,big,920,190,D,'800');c.fillText(big,74,610);
+  c.fillStyle=r>=0?'#6EDC96':'#FF8A7A';c.font='800 72px '+D;var pr=pct(r,1);c.fillText(pr,80,720);var pw=c.measureText(pr).width;
+  c.fillStyle='#B8C4D6';c.font='500 44px '+B;c.fillText('in 3 simulated years',80+pw+24,716);
+  // chart
+  var data=(S&&S.worth&&S.worth.length>1)?S.worth:[START,w],x0=80,y0=800,cw=920,ch=430,mn=Math.min.apply(null,data),mx=Math.max.apply(null,data);
+  if(mx-mn<1){mx+=1;mn-=1;}var pad=(mx-mn)*.08;mn-=pad;mx+=pad;
+  c.fillStyle='#12284A';rr(c,x0-30,y0-30,cw+60,ch+60,32);c.fill();
+  function X(i){return x0+i/(data.length-1)*cw;}function Y(v){return y0+ch-(v-mn)/(mx-mn)*ch;}
+  c.strokeStyle='rgba(184,196,214,.35)';c.lineWidth=3;c.setLineDash([10,12]);c.beginPath();c.moveTo(x0,Y(START));c.lineTo(x0+cw,Y(START));c.stroke();c.setLineDash([]);
+  c.beginPath();c.moveTo(X(0),Y(data[0]));for(var i=1;i<data.length;i++)c.lineTo(X(i),Y(data[i]));c.lineTo(X(data.length-1),y0+ch);c.lineTo(X(0),y0+ch);c.closePath();c.fillStyle='rgba(198,244,50,.18)';c.fill();
+  c.beginPath();c.moveTo(X(0),Y(data[0]));for(i=1;i<data.length;i++)c.lineTo(X(i),Y(data[i]));c.strokeStyle=LIME;c.lineWidth=7;c.lineJoin='round';c.stroke();
+  c.fillStyle=LIME;c.beginPath();c.arc(X(data.length-1),Y(data[data.length-1]),14,0,7);c.fill();c.strokeStyle=NAVY;c.lineWidth=5;c.stroke();
+  // S&P line
+  if(END.br!=null){c.fillStyle='#B8C4D6';c.font='500 40px '+B;c.fillText('All-in S&P 500 fund: '+pct(END.br,1),80,1340);}
+  // CTA
+  c.fillStyle='#fff';c.font='800 150px '+D;c.fillText('Beat me?',74,1560);
+  c.font='800 58px '+D;var cta='Play free at goinvesteen.com',cwid=c.measureText(cta).width;c.fillStyle=LIME;rr(c,80,1620,cwid+80,112,56);c.fill();c.fillStyle=NAVY;c.fillText(cta,120,1696);
+  c.fillStyle='#7F8EA3';c.font='400 30px '+B;c.fillText('Simulation game with virtual money. Not financial advice.',80,1830);
+  return cv;}
+$('e-card').addEventListener('click',function(){var b=this;b.disabled=true;
+  var ready=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
+  ready.then(function(){var cv=makeCard();cv.toBlob(function(blob){b.disabled=false;if(!blob){flash('Couldn’t make the image on this device.');return;}
+    var file=new File([blob],'investeen-result.png',{type:'image/png'}),txt='I turned $100,000 into '+usd0.format(END.w||worth())+' on InvesTeen. Beat me? goinvesteen.com';
+    if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],text:txt}).catch(function(){});}
+    else{var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='investeen-result.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},4000);flash('Image saved. Post it to your story!');}
+  },'image/png');});});
+
+/* ---- Friend challenges ---- */
+var CH=null;
+function chalUrl(code){return location.origin+'/?challenge='+code+'#simulator';}
+$('e-chal').addEventListener('click',function(){var bx=$('chal-box');bx.hidden=!bx.hidden;if(!bx.hidden)$('chal-name').focus();});
+$('chal-go').addEventListener('click',function(){var b=this,nm=$('chal-name').value.trim(),msg=$('chal-msg');
+  if(nm&&!/^[A-Za-z0-9_.]{3,16}$/.test(nm)){msg.textContent='Names are 3–16 letters, numbers, dots or underscores. Or leave it empty.';return;}
+  b.disabled=true;b.textContent='Making your link…';
+  api('/game/challenge',{id:S.srv,name:nm}).then(function(j){award('challenger');var url=chalUrl(j.code),r=END.r!=null?END.r:worth()/START-1;
+    var txt='I turned $100,000 into '+usd0.format(END.w||worth())+' ('+pct(r,1)+') in a 3-year market simulation on InvesTeen. Same market, your turn. Can you beat me?';
+    msg.innerHTML='';msg.appendChild(document.createTextNode('Your link: '));var a=el('a',null,url);a.href=url;a.style.overflowWrap='anywhere';msg.appendChild(a);
+    b.disabled=false;b.textContent='Share the link again';
+    function copy(){if(navigator.clipboard)navigator.clipboard.writeText(txt+' '+url).then(function(){flash('Link copied. Send it to a friend!');}).catch(function(){});}
+    if(navigator.share)navigator.share({title:'InvesTeen challenge',text:txt,url:url}).catch(function(e){if(!e||e.name!=='AbortError')copy();});else copy();
+  }).catch(function(e){b.disabled=false;b.textContent='Get my challenge link';msg.textContent=e.message||'Couldn’t make a link. Try again.';});});
+function endChallengeLink(){CH=null;$('chal-wrap').hidden=true;try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}}
+function showChallenge(){var bn=$('chal-banner');bn.innerHTML='';var p=el('p');
+  p.appendChild(document.createTextNode('🎯 '+(CH.name||'A friend')+' challenged you! They turned $100,000 into '));p.appendChild(el('b',null,usd0.format(CH.worth)+' ('+pct(CH.ret,1)+')'));
+  p.appendChild(document.createTextNode(' in a 3-year simulated market. Play the exact same market and try to beat them.'));
+  p.appendChild(el('small',null,S?'Starting the challenge replaces the game you’re playing now. Challenge games are just for fun and don’t enter the leaderboard.':'Challenge games are just for fun and don’t enter the leaderboard.'));
+  var go1=el('button','btn btn-lime btn-big','Start the challenge');go1.type='button';
+  go1.addEventListener('click',function(){S=null;try{localStorage.removeItem(KEY);}catch(e){}detailSym=null;view='portfolio';showGame();
+    var f=document.querySelector('input[name=mode][value=future]');if(f)f.checked=true;var lv=$('level-form');if(lv.requestSubmit)lv.requestSubmit();else $('start').click();});
+  var no=el('button','btn btn-ghost','No thanks');no.type='button';no.addEventListener('click',endChallengeLink);
+  bn.appendChild(p);bn.appendChild(go1);bn.appendChild(no);$('chal-wrap').hidden=false;
+  var f=document.querySelector('input[name=mode][value=future]');if(f&&!S)f.checked=true;}
+(function(){var m=/[?&]challenge=([a-z0-9]{8})(?:&|$)/i.exec(location.search);if(!m)return;
+  api('/game/challenge?code='+m[1].toLowerCase()).then(function(j){CH=j;showChallenge();if($('simulator').hidden)go('simulator',false);})
+  .catch(function(){flash('That challenge link doesn’t work anymore. You can still play a normal game!');try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}});})();
+
+/* ================= LESSONS ================= */
+var LESSONS=[
+ {id:'stocks',t:'What is a stock?',d:'Owning a tiny piece of a company.',
+  b:['A stock (also called a share) is a tiny piece of ownership in a company. If a company is split into 1 million shares and you own one, you own one millionth of it.',
+     'Stock prices move every day as people buy and sell. When investors expect a company to earn more in the future, they’re willing to pay more, so the price tends to rise.',
+     'You can make money two ways: the price rises above what you paid, or the company pays you a dividend. You can also lose money. Prices can fall a lot, and a company can even go out of business.'],
+  tr:'Buy one company you know, like Apple, Nike or Disney, and watch how it moves each quarter.',
+  q:[['What do you own when you buy one share of Nike?',['A small piece of the company','A loan to Nike','A Nike gift card','A promise of a fixed profit'],0,'A share is part-ownership. A loan to a company is a bond, not a stock.'],
+     ['Why does a stock’s price usually go up?',['Investors expect the company to earn more','The company prints more shares','The government sets a higher price','It always rises on Mondays'],0,'Prices follow what buyers expect a company to earn. Printing more shares usually pushes the price down, not up.'],
+     ['Which is a real risk of owning a single stock?',['Its price can fall a lot, even close to zero','You have to pay the company’s debts','You can only sell once a year','There is no risk'],0,'Your loss is limited to what you put in, but that can be all of it if the company fails.']]},
+ {id:'index',t:'Index funds',d:'Buying hundreds of companies at once.',
+  b:['An index fund buys every company in a list called an index. An S&P 500 fund holds about 500 of the biggest US companies in one purchase.',
+     'Because you own so many companies, one bad result is only a small part of the fund. That’s instant diversification.',
+     'Index funds usually charge very low fees. Over long periods, most professional fund managers end up doing worse than the index after their fees. That’s why many people build their investing around index funds.'],
+  tr:'Finish a "Simulate the future" game and compare your result with the "All-in S&P 500 fund" line on the final screen.',
+  q:[['About how many companies does an S&P 500 fund hold?',['About 500','Exactly 1','About 50','About 5,000'],0,'The S&P 500 tracks about 500 large US companies.'],
+     ['What’s the main advantage of an index fund?',['Lots of companies at a low cost','It’s guaranteed to rise every year','It has no risk','It pays a fixed interest rate'],0,'Index funds can still fall, sometimes a lot. Their strength is wide spread at low cost.'],
+     ['Over long periods, how do most professional fund managers do compared with the index?',['Most do worse after fees','Almost all of them beat it','They all match it exactly','It can’t be measured'],0,'Studies that track this year after year find most actively managed funds trail their index over 10+ years.']]},
+ {id:'bonds',t:'Bonds',d:'Lending money and earning interest.',
+  b:['A bond is a loan. You lend money to a government or company, they pay you interest, and they return the money at the end.',
+     'Bonds usually move much less than stocks, so they can soften the drops when the stock market falls. In return, they usually grow more slowly over the long run.',
+     'Bond prices and interest rates move in opposite directions. When rates rise, new bonds pay more, so older bonds become worth less. When rates fall, older bonds become worth more.'],
+  tr:'Put 20–30% of your money into a bond fund like BND and see how it changes the bumps on your chart.',
+  q:[['Buying a bond means you…',['Lend money and receive interest','Own part of a company','Get a share of profits','Pay a monthly fee'],0,'A bond is a loan. Owning part of a company is a stock.'],
+     ['When interest rates rise, existing bond prices usually…',['Fall','Rise','Stay exactly the same','Double'],0,'New bonds pay the higher rate, so older, lower-paying bonds are worth less.'],
+     ['Why own bonds if they usually grow more slowly than stocks?',['They usually swing less and can soften drops','They always beat stocks','They can never lose value','They pay dividends every day'],0,'Bonds can lose value too, but they usually move much less than stocks.']]},
+ {id:'diverse',t:'Diversification',d:'Don’t put all your eggs in one basket.',
+  b:['Diversification means spreading your money across many different investments.',
+     'Different investments react to news in different ways. An oil price jump can help energy companies and hurt car makers. With a mix, one bad event hurts less.',
+     'It doesn’t remove all risk. When the whole market falls, most things fall together. But it lowers the chance that one bad pick wipes you out.'],
+  tr:'Own at least 5 investments across stocks, funds and bonds to unlock the Diversified badge.',
+  q:[['Which portfolio is the most diversified?',['An S&P 500 fund, a bond fund and a few stocks from different sectors','100% Tesla','Three tech stocks','Two car makers'],0,'It spreads money across hundreds of companies, sectors and bonds.'],
+     ['Can diversification remove all risk?',['No, the whole market can fall together','Yes, completely','Only on weekends','Only if you own 10 stocks'],0,'Diversification reduces the damage from any single investment, not market-wide drops.'],
+     ['Why does mixing sectors help?',['They often react differently to the same news','They always move together','It means you pay no fees','Sector funds can’t fall'],0,'When one sector is hit, another may hold up or even gain.']]},
+ {id:'risk',t:'Risk and volatility',d:'Why prices swing, and how to handle it.',
+  b:['Volatility is how much a price swings. A stock like NVIDIA or Tesla can move 5% in a single day, while a bond fund often moves less than that in a month.',
+     'Riskier investments may grow more over the long run, but they can also drop much further. Big gains are never guaranteed.',
+     'Time matters. Money you need soon shouldn’t be in something that can drop 40%. And selling in a panic right after a crash turns a temporary drop into a permanent loss.'],
+  tr:'Play one game all-in on a single volatile stock and another with a mix. Compare the two charts.',
+  q:[['What does high volatility mean?',['The price swings a lot, up and down','The price only goes up','The company is very large','It pays a high dividend'],0,'Volatility measures the size of the swings in both directions.'],
+     ['The market just fell 20% and you won’t need the money for years. What’s a common mistake?',['Panic-selling everything right after the drop','Keeping a balanced mix','Reading why the market fell','Checking your goals'],0,'Selling after a fall locks in the loss and can mean missing the recovery.'],
+     ['Taking more risk…',['Can lead to bigger gains or bigger losses','Always means higher returns','Always loses money','Has no effect'],0,'More risk widens the range of outcomes. It doesn’t guarantee anything.']]},
+ {id:'compound',t:'Compounding',d:'Growth on top of growth.',
+  b:['Compounding means your gains start earning gains of their own. 10% of $1,000 is $100. The next year, 10% is earned on $1,100, which is $110.',
+     'Dividends help too. If you reinvest them, they buy more shares, which pay more dividends.',
+     'Time is the secret ingredient. At 7% a year, money roughly doubles about every 10 years. A quick shortcut is the Rule of 72: divide 72 by the yearly return (72 ÷ 7 ≈ 10 years). Starting early can matter more than starting big.'],
+  tr:'In a "Simulate the future" game, keep your dividends invested and watch the "Dividends you collected" number grow.',
+  q:[['$1,000 grows 10% a year for 2 years. What do you end up with?',['$1,210','$1,200','$1,100','$1,020'],0,'Year 1: $1,100. Year 2: 10% of $1,100 is $110, so $1,210.'],
+     ['Using the Rule of 72, about how long does money take to double at 8% a year?',['About 9 years','About 4 years','About 20 years','About 72 years'],0,'72 ÷ 8 = 9 years.'],
+     ['What’s the biggest advantage young investors have?',['Time','Inside information','Bigger salaries','Lower prices'],0,'More years give compounding more time to work.']]}];
+var LKEY='investeen-lessons';
+function myLessons(){try{return JSON.parse(localStorage.getItem(LKEY)||'{}')||{};}catch(e){return {};}}
+function renderLessons(){var box=$('lessons');if(!box)return;var done=myLessons(),n=0;box.innerHTML='';
+  LESSONS.forEach(function(L,i){var d=done[L.id];if(d)n++;var b=el('button','lesson'+(d?' done':''));b.type='button';
+    b.appendChild(el('span','n','Lesson '+(i+1)));b.appendChild(el('b',null,L.t));b.appendChild(el('span',null,L.d));
+    b.appendChild(el('span','st',d?'✓ Done · best quiz score '+d.best+'/3':'2 min · 3 questions'));b.addEventListener('click',function(){openLesson(i);});box.appendChild(b);});
+  $('ls-sub').textContent=n+' of '+LESSONS.length+' done';}
+var CUR=null;
+function openLesson(i){var L=LESSONS[i];CUR=i;$('ls-eyebrow').textContent='Lesson '+(i+1)+' of '+LESSONS.length;$('ls-title').textContent=L.t;
+  var bd=$('ls-body');bd.innerHTML='';L.b.forEach(function(t){bd.appendChild(el('p',null,t));});
+  var tr=$('ls-try');tr.innerHTML='';tr.appendChild(el('b',null,'Try it: '));tr.appendChild(document.createTextNode(L.tr));
+  var qz=$('ls-quiz');qz.innerHTML='';qz.appendChild(el('p','label','Quick quiz'));
+  L.q.forEach(function(q,qi){var w=el('div','qq'),fs=el('fieldset');fs.appendChild(el('legend',null,(qi+1)+'. '+q[0]));
+    // shuffle display order but keep the right answer index
+    var ord=q[1].map(function(_,k){return k;});for(var k=ord.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1)),t=ord[k];ord[k]=ord[j];ord[j]=t;}
+    ord.forEach(function(k){var lb=el('label'),inp=document.createElement('input');inp.type='radio';inp.name='lq'+qi;inp.value=String(k);lb.appendChild(inp);lb.appendChild(el('span',null,q[1][k]));fs.appendChild(lb);});
+    w.appendChild(fs);var why=el('p','why');why.hidden=true;w.appendChild(why);qz.appendChild(w);});
+  $('ls-score').textContent='';$('ls-check').hidden=false;$('ls-check').textContent='Check my answers';openModal('m-lesson');$('m-lesson').querySelector('.card').scrollTop=0;}
+$('ls-check').addEventListener('click',function(){if(CUR==null)return;var L=LESSONS[CUR],qz=$('ls-quiz'),sc=0,miss=false;
+  if(this.textContent==='Try again'){openLesson(CUR);return;}
+  L.q.forEach(function(q,qi){var c=qz.querySelector('input[name=lq'+qi+']:checked');if(!c)miss=true;});
+  if(miss){$('ls-score').textContent='Answer all 3 questions first.';return;}
+  L.q.forEach(function(q,qi){var c=qz.querySelector('input[name=lq'+qi+']:checked'),ok=+c.value===q[2];if(ok)sc++;
+    Array.prototype.forEach.call(qz.querySelectorAll('input[name=lq'+qi+']'),function(inp){inp.disabled=true;var lb=inp.parentNode;if(+inp.value===q[2])lb.classList.add('right');else if(inp===c)lb.classList.add('wrong');});
+    var why=qz.querySelectorAll('.qq')[qi].querySelector('.why');why.hidden=false;why.textContent=(ok?'✓ Right. ':'✗ Not quite. ')+q[3];});
+  var d=myLessons(),prev=d[L.id];d[L.id]={best:Math.max(sc,prev?prev.best:0),at:Date.now()};try{localStorage.setItem(LKEY,JSON.stringify(d));}catch(e){}
+  $('ls-score').textContent='You got '+sc+' of 3'+(sc===3?'. Perfect! 🎉':'. Read the notes above, then try again if you like.');
+  this.textContent=sc===3?'Try again':'Try again';
+  if(sc===3)award('perfect');if(LESSONS.every(function(x){return d[x.id];}))award('scholar');renderLessons();renderBadges($('l-badges'),$('lbd-sub'));});
+$('ls-sim').addEventListener('click',function(){closeModal('m-lesson');go('simulator',true);});
 
 S=load();showGame();renderTape();
 var hh=(location.hash||'').replace('#','');
