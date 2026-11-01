@@ -98,7 +98,7 @@ export async function assetInfo(sym) {
   const st = getStore({ name: 'assets', consistency: 'strong' });
   let m = null;
   try { m = await st.get(sym, { type: 'json' }); } catch (e) { /* none */ }
-  if (m && Date.now() - m.at < 7 * 864e5) return m;
+  if (m && m.v === 2 && Date.now() - m.at < 3 * 864e5) return m;
   const row = await findSym(sym);
   if (!row) return m || null;
   let prof = {}, met = {};
@@ -119,7 +119,15 @@ export async function assetInfo(sym) {
   const about = etf
     ? (cls === 'bond' ? 'A bond fund: one share holds many loans to governments or companies. Calmer than stocks.' : 'An exchange-traded fund (ETF): one share holds a whole basket of investments.')
     : `${ind ? ind + ' company' : 'A company'}${prof.country && prof.country !== 'US' ? ' based in ' + prof.country : ''}, traded on the US stock market.`;
-  m = { sym, name, cls, sk, sec: SEC_LABEL[sk] || '', yld: Math.round(yld * 10000) / 10000, sig: Math.round(sig * 1000) / 1000, about, at: Date.now() };
+  const num = (x) => (Number.isFinite(+x) && x !== null && x !== '' ? +x : null);
+  const info = {
+    exchange: prof.exchange || '', country: prof.country || '', industry: ind, ipo: prof.ipo || '', web: /^https?:\/\//.test(prof.weburl || '') ? prof.weburl : '',
+    logo: /^https:\/\//.test(prof.logo || '') ? prof.logo : '', mcap: num(prof.marketCapitalization), shares: num(prof.shareOutstanding),
+    pe: num(met.peTTM ?? met.peBasicExclExtraTTM ?? met.peNormalizedAnnual), eps: num(met.epsTTM ?? met.epsBasicExclExtraItemsTTM),
+    hi52: num(met['52WeekHigh']), lo52: num(met['52WeekLow']), hi52d: met['52WeekHighDate'] || '', lo52d: met['52WeekLowDate'] || '', beta: num(met.beta),
+    rev: num(met.revenuePerShareTTM), margin: num(met.netProfitMarginTTM), ret52: num(met['52WeekPriceReturnDaily'])
+  };
+  m = { v: 2, sym, name, cls, etf, sk, sec: SEC_LABEL[sk] || '', yld: Math.round(yld * 10000) / 10000, sig: Math.round(sig * 1000) / 1000, about, info, at: Date.now() };
   try { await st.setJSON(sym, m); } catch (e) { /* fine */ }
   return m;
 }
