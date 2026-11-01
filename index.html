@@ -78,12 +78,14 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:66px;flex-wrap:wrap;padding-block:8px}
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-0.03em;background:none;border:0;padding:0;cursor:pointer}
 .brand svg{width:34px;height:34px;flex:none}
-.tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:999px}
+.tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:999px;max-width:100%;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:none}
 .tab{min-height:40px;padding:0 16px;border-radius:999px;border:0;background:transparent;font-weight:700;font-size:15px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .tab[aria-selected="true"]{background:var(--ink);color:var(--paper)}
 .tab .dot{width:7px;height:7px;border-radius:50%;background:var(--lime)}
-@media (max-width:520px){.top{justify-content:center}.tab{padding:0 12px;font-size:14px}}
-@media (max-width:400px){.tab{padding:0 9px;font-size:13.5px;gap:4px}.tabs{gap:2px}}
+@media (max-width:620px){.top{justify-content:center}.tab{padding:0 10px;font-size:14px}}
+@media (max-width:430px){.tab{padding:0 7px;font-size:13px;gap:4px;min-height:38px}.tabs{gap:0}.tab .dot{width:6px;height:6px}}
+@media (max-width:380px){.tab{padding:0 6px;font-size:12px}.tab .dot{display:none}}
+@media (max-width:330px){.tab{padding:0 4px;font-size:11.5px}}
 section[role="tabpanel"]{padding-bottom:40px}
 
 /* ---------- HOME ---------- */
@@ -505,6 +507,7 @@ footer strong{color:var(--ink)}
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button class="tab" role="tab" id="tab-home" aria-controls="home" data-go="home">Home</button>
       <button class="tab" role="tab" id="tab-simulator" aria-controls="simulator" data-go="simulator"><span class="dot" aria-hidden="true"></span>Simulator</button>
+      <button class="tab" role="tab" id="tab-market" aria-controls="market" data-go="market">Market</button>
       <button class="tab" role="tab" id="tab-leaderboard" aria-controls="leaderboard" data-go="leaderboard">Leaderboard</button>
       <button class="tab" role="tab" id="tab-learn" aria-controls="learn" data-go="learn">Learn</button>
     </nav>
@@ -535,18 +538,14 @@ footer strong{color:var(--ink)}
     </div>
   </div>
 
-  <div class="wrap block" id="market-block">
+  <div class="wrap block">
     <div class="block-head">
-      <div><h2>The <span class="hl">market</span></h2><p style="margin-top:10px">Look up any of 11,000+ US stocks and funds: price chart, company size, key numbers and news.</p></div>
+      <h2>Live market</h2>
       <span class="live" id="home-status"><i></i><span>Checking prices…</span></span>
     </div>
-    <div class="searchrow mk-search"><label for="mk-q" class="label" style="position:absolute;left:-9999px">Search the market</label><input id="mk-q" type="search" placeholder="Search any company or ticker: Apple, Nike, VOO…" autocomplete="off"></div>
-    <div class="mk-results" id="mk-results" hidden></div>
     <div class="tape" id="tape"></div>
-    <div class="mk-tabs" role="group" aria-label="Sort stocks"><button type="button" data-mk="pop" aria-pressed="true">Popular</button><button type="button" data-mk="up" aria-pressed="false">Gainers</button><button type="button" data-mk="down" aria-pressed="false">Losers</button></div>
-    <div class="mk-list" id="mk-list"></div>
-    <button class="btn" type="button" id="mk-more">Show all</button>
     <p class="offline-note" id="home-offline" hidden>Live prices aren't available here, so these are closing prices from 16 Oct 2026. On your InvesTeen website they update every couple of minutes.</p>
+    <button class="btn btn-lime" type="button" data-go="market" style="margin-top:16px">Explore the whole market →</button>
   </div>
 
   <div class="wrap block">
@@ -825,6 +824,22 @@ footer strong{color:var(--ink)}
   </div>
 </section>
 
+<section id="market" role="tabpanel" aria-labelledby="tab-market" hidden>
+  <div class="wrap" id="market-block" style="padding-bottom:48px">
+    <div class="learn-head">
+      <p class="label">Market</p>
+      <h1 style="margin-top:12px">Explore the <span class="hl">stock market</span></h1>
+      <p>Look up any of 11,000+ US stocks and funds: price chart, company size, key numbers and news.</p>
+    </div>
+    <div class="searchrow mk-search"><label for="mk-q" class="label" style="position:absolute;left:-9999px">Search the market</label><input id="mk-q" type="search" placeholder="Search any company or ticker: Apple, Nike, VOO…" autocomplete="off"></div>
+    <div class="mk-results" id="mk-results" hidden></div>
+    <div class="mk-tabs" role="group" aria-label="Sort stocks"><button type="button" data-mk="pop" aria-pressed="true">Popular</button><button type="button" data-mk="up" aria-pressed="false">Gainers</button><button type="button" data-mk="down" aria-pressed="false">Losers</button></div>
+    <div class="mk-list" id="mk-list"></div>
+    <button class="btn" type="button" id="mk-more">Show all</button>
+    <p class="note" style="margin-top:20px">Prices may be a few minutes behind. Not financial advice.</p>
+  </div>
+</section>
+
 <section id="stock" role="region" aria-label="Stock details" hidden>
   <div class="wrap" style="padding-block:20px 48px">
     <button class="btn" type="button" id="sk-back">← Back to the market</button>
@@ -1008,13 +1023,14 @@ function withIco(n,txt){var f=document.createDocumentFragment();f.appendChild(ic
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 
 /* ================= TABS ================= */
-var TABS=['home','simulator','leaderboard','learn','stock'],NAVT=['home','simulator','leaderboard','learn'];
+var TABS=['home','simulator','market','leaderboard','learn','stock'],NAVT=['home','simulator','market','leaderboard','learn'];
 var DOC_TITLE=document.title;
 function go(t,push){
   if(TABS.indexOf(t)<0)t='home';
   TABS.forEach(function(x){$(x).hidden=x!==t;var tb=$('tab-'+x);if(tb){tb.setAttribute('aria-selected',String(x===t));tb.tabIndex=x===t?0:-1;}});
   if(t==='simulator')requestAnimationFrame(function(){if(S)setView(view);});
   if(t==='leaderboard')renderBoard($('page-board'),$('pb-sub'));
+  if(t==='market'&&typeof renderMarketList==='function')renderMarketList();
   if(t==='stock')renderStock();else document.title=DOC_TITLE;
   if(t==='learn'){renderLessons();renderBadges($('l-badges'),$('lbd-sub'));}
   if(push){try{history.replaceState(null,'','#'+t);}catch(e){}window.scrollTo(0,0);}
@@ -2043,7 +2059,7 @@ function renderMkResults(){var q=$('mk-q').value.trim(),box=$('mk-results');box.
 /* ---- stock page ---- */
 var STOCK={sym:null,data:{},range:'3M'};
 function openStock(sym){STOCK.sym=sym;go('stock',true);try{history.replaceState(null,'','#stock/'+encodeURIComponent(sym));}catch(e){}}
-$('sk-back').addEventListener('click',function(){go('home',false);try{history.replaceState(null,'','#home');}catch(e){}var m=$('market-block');if(m)window.scrollTo({top:Math.max(0,m.offsetTop-80)});});
+$('sk-back').addEventListener('click',function(){go('market',true);});
 function renderStock(){var sym=STOCK.sym,box=$('sk-body');if(!sym){go('home');return;}
   document.title=sym+' · InvesTeen';
   var d=STOCK.data[sym];
