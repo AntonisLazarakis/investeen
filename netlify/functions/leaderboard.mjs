@@ -1,6 +1,6 @@
 // Monthly leaderboard for finished "Simulate the future" games.
 // GET  /api/leaderboard            -> this month's top 50 (usernames only, never emails) + last month's winners
-// POST /api/leaderboard { id, name, email, age, parent, rules } -> enter a finished game
+// POST /api/leaderboard { id, name, email, age, parent, rules, updates } (updates = optional opt-in to InvesTeen emails) -> enter a finished game
 import { getStore } from '@netlify/blobs';
 import { START } from '../lib/market.mjs';
 
@@ -74,6 +74,7 @@ export default async (req) => {
   const games = getStore({ name: 'games', consistency: 'strong' });
   const g = typeof b.id === 'string' && b.id.length <= 64 ? await games.get(b.id, { type: 'json' }) : null;
   if (!g || !g.done) return json({ error: 'Finish all 3 years of a game first.' }, 400);
+  if (g.challenge) return json({ error: 'Challenge games replay a friend\u2019s market, so they can\u2019t enter the leaderboard. Start a new game to compete.' }, 400);
   if (g.submitted) return json({ error: 'This game is already on the leaderboard.' }, 409);
 
   const board = (await boards.get(month, { type: 'json' })) || { entries: [] };
@@ -81,12 +82,12 @@ export default async (req) => {
   if ((await fullBoard(boards, month, board.entries)).some((e) => e.name.toLowerCase() === lname && e.email !== email)) return json({ error: 'That username is taken this month. Try another one.' }, 409);
   if (board.entries.length >= 20000) return json({ error: 'The leaderboard is full this month.' }, 503);
 
-  const entry = { name, email, age: b.age, parent: b.age === '15-17', ret: Math.round((g.finalWorth / START - 1) * 10000) / 10000, worth: g.finalWorth, at: Date.now(), id: g.id };
+  const entry = { name, email, age: b.age, parent: b.age === '15-17', ret: Math.round((g.finalWorth / START - 1) * 10000) / 10000, worth: g.finalWorth, at: Date.now(), id: g.id, updates: b.updates === true };
   const i = board.entries.findIndex((e) => e.email === email);
   let kept = false;
   if (i >= 0) {
     if (entry.ret > board.entries[i].ret) board.entries[i] = entry;
-    else { kept = true; board.entries[i].name = name; }
+    else { kept = true; board.entries[i].name = name; board.entries[i].updates = b.updates === true; }
   } else board.entries.push(entry);
   await boards.setJSON(month, board);
   g.submitted = true; g.entryEmail = email;

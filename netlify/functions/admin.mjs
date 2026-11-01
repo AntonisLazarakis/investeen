@@ -24,7 +24,7 @@ async function unenteredGames() {
   for (let i = 0; i < blobs.length; i += 25) {
     const batch = await Promise.all(blobs.slice(i, i + 25).map((b) => games.get(b.key, { type: 'json' }).catch(() => null)));
     batch.forEach((g) => {
-      if (g && g.done && !g.submitted && typeof g.finalWorth === 'number') {
+      if (g && g.done && !g.submitted && !g.challenge && typeof g.finalWorth === 'number') {
         out.push({ id: g.id, finalWorth: g.finalWorth, ret: Math.round((g.finalWorth / START - 1) * 10000) / 10000, started: g.created, finishedAt: g.finishedAt || null });
       }
     });
